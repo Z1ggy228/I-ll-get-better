@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>I'll get better.</title>
+  <link rel="shortcut icon" href="./favicon.png" type="image/x-icon">
+  <style>
+    :root{
+      --bg1:#26312b;
+      --bg2:#3b2c20;
+      --text:#dbe3dd;
+      --muted:#9fb0a5;
+      --accent:#8fb3ff;
+      --line:rgba(255,255,255,.08);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% 30%, rgba(143,179,255,.12), transparent 60%),
+        radial-gradient(900px 500px at 70% 20%, rgba(255,170,90,.12), transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+    .wrap{max-width:1080px;margin:0 auto;padding:24px 16px 56px}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+    @media (max-width: 960px){.grid{grid-template-columns:1fr}}
+
+    .card{
+      background: rgba(15,18,16,.72);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    /* profile header */
+    .profile{padding:18px;display:flex;gap:16px;align-items:center}
+    .avatar{
+      width:92px;height:92px;border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      overflow:hidden;flex:0 0 auto;display:grid;place-items:center
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .avatar .ph{font-size:30px;color:rgba(255,255,255,.35)}
+    .p-meta{flex:1 1 auto;min-width:0}
+    .p-name{font-size:18px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 0 6px}
+    .p-sub{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
+    .flag{
+      width:18px;height:12px;border-radius:3px;border:1px solid var(--line);
+      background:linear-gradient(#d81e26 0 33%, #fff 33% 66%, #1c57a7 66% 100%);
+    }
+
+    /* activity header */
+    .activity-head{
+      padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+      border-bottom:1px solid var(--line);
+    }
+    .activity-head h2{margin:0;font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.2px}
+    .activity-total{font-size:14px;font-weight:800}
+
+    .toolbar{
+      padding:12px 16px;display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);
+    }
+    .toolbar .chip{
+      display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;
+      border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:12px;
+    }
+    .toolbar .spacer{flex:1 1 auto}
+
+    /* list rows */
+    .list{padding:10px 0}
+    .row{
+      padding:12px 16px;display:flex;gap:12px;align-items:center;border-top:1px solid var(--line);
+      cursor:pointer;
+    }
+    .row:first-child{border-top:none}
+    .thumb{
+      width:92px;height:52px;border-radius:10px;overflow:hidden;border:1px solid var(--line);
+      background:rgba(255,255,255,.05);flex:0 0 auto;display:grid;place-items:center;
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb .ph{font-size:12px;color:rgba(255,255,255,.35)}
+    .r-main{flex:1 1 auto;min-width:0}
+    .r-title{margin:0 0 6px;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .r-sub{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+    .r-sub b{color:var(--text)}
+    .bar{
+      margin-top:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.06);
+      border:1px solid var(--line);overflow:hidden;
+    }
+    .bar > i{display:block;height:100%;width:0%;background:rgba(143,179,255,.35)}
+    .r-actions{display:flex;gap:8px;flex:0 0 auto}
+    .iconbtn{
+      width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
+      background:rgba(255,255,255,.05);border:1px solid var(--line);cursor:pointer;padding:0;text-align:center;
+    }
+    .iconbtn:hover{background:rgba(255,255,255,.09)}
+
+    .empty{
+      padding:24px 16px;
+      color:var(--muted);
+      text-align:center;
+    }
+    .empty b{color:var(--text)}
+
+    /* side */
+    .side{padding:16px}
+    .level{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .lvl-title{font-size:14px;color:var(--muted)}
+    .lvl-pill{
+      display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);
+      border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-weight:700;
+    }
+    .lvl-num{
+      width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+      background:rgba(143,179,255,.18);border:1px solid rgba(143,179,255,.35);font-size:12px;
+    }
+    .btns{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+    button{
+      cursor:pointer;color:var(--text);background:rgba(255,255,255,.06);
+      border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600;text-align:left;
+    }
+    button:hover{background:rgba(255,255,255,.09)}
+    button.primary{background:rgba(143,179,255,.18);border-color:rgba(143,179,255,.35)}
+    button.danger{background:rgba(255,90,90,.12);border-color:rgba(255,90,90,.35)}
+    .hint{
+      color:var(--muted);font-size:12px;line-height:1.35;border-top:1px solid var(--line);
+      padding-top:12px;margin-top:12px;
+    }
+    .mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+    .mini button{flex:1 1 auto;text-align:center}
+
+    /* dialogs */
+    dialog{
+      border:none;border-radius:16px;padding:0;max-width:560px;width:calc(100% - 24px);
+      background: rgba(15,18,16,.92);color:var(--text);border:1px solid var(--line);box-shadow: var(--shadow);
+    }
+    dialog::backdrop{background:rgba(0,0,0,.5)}
+    .modal-head{
+      padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .modal-head h3{margin:0;font-size:14px}
+    .modal-body{padding:14px 16px}
+    .modal-foot{padding:14px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
+    label{font-size:12px;color:var(--muted);display:block;margin:10px 0 6px}
+    select, input[type="date"], input[type="number"], input[type="text"]{
+      background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--text);border-radius:10px;
+      padding:10px 10px;width:100%;outline:none;
+    }
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:520px){.two{grid-template-columns:1fr}}
+    .filehint{font-size:12px;color:var(--muted);margin-top:6px}
+
+    /* history list */
+    .history-item{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+    .history-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .history-note{margin-top:6px}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="grid">
+      <div class="card">
+        <div class="profile">
+          <div class="avatar" id="avatarBox"><span class="ph">👤</span></div>
+          <div class="p-meta">
+            <p class="p-name" id="profileName">Ziggy</p>
+            <div class="p-sub">
+              <span class="flag" title="Thailand"></span>
+              <span id="profileCountry">Thailand</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="activity-head">
+          <h2>Недавняя активность</h2>
+          <div class="activity-total" id="twoWeeksTotal">0 ч. за последние 2 недели</div>
+        </div>
+
+        <div class="toolbar">
+          <!-- <div class="chip">Диапазон: последние 14 дней</div> -->
+          <div class="chip" id="chipAll">Всего: 0 ч.</div>
+          <div class="spacer"></div>
+          <!-- <div class="chip">Сортировка: 2 недели</div> -->
+        </div>
+
+        <div class="list" id="list"></div>
+      </div>
+
+      <div class="card side">
+        <div class="level">
+          <div class="lvl-title">Уровень</div>
+          <div class="lvl-pill">
+            <span class="lvl-num" id="lvlNum">1</span>
+            <span class="muted" id="lvlText">XP: 0</span>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="primary" id="btnAddHours">+ Часы</button>
+          <button id="btnAddCategory">+ Категория</button>
+          <button id="btnManage">Управление категориями</button>
+          <button id="btnProfile">Редактировать профиль</button>
+        </div>
+
+        <div class="hint">
+          <div class="mini">
+            <button id="btnExport">Экспорт JSON</button>
+            <button id="btnImport">Импорт JSON</button>
+          </div>
+          <div class="mini">
+            <span>Каждый день прокрастинации — это не «потерянное время», а день, который отодвигает момент, когда ты сидишь на Пхукете🌴</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD HOURS -->
+  <dialog id="dlgHours">
+    <div class="modal-head">
+      <h3>Добавить часы</h3>
+      <button type="button" class="iconbtn" id="hoursClose" aria-label="close">✕</button>
+    </div>
+
+    <form id="formHours">
+      <div class="modal-body">
+        <label>Категория</label>
+        <select id="hoursCategory" required></select>
+
+        <div class="two">
+          <div>
+            <label>Дата</label>
+            <input type="date" id="hoursDate" required />
+          </div>
+          <div>
+            <label>Часы (можно 1.5)</label>
+            <input type="number" id="hoursValue" step="0.25" min="0.25" placeholder="1.5" required />
+          </div>
+        </div>
+
+        <label>Заметка (опционально)</label>
+        <input type="text" id="hoursNote" placeholder="Напр. грамматика / проект / собес" />
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" id="hoursCancel">Отмена</button>
+        <button class="primary" type="submit">Добавить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ADD CATEGORY -->
+  <dialog id="dlgCat">
+    <div class="modal-head">
+      <h3>Новая категория</h3>
+      <button type="button" class="iconbtn" id="catClose" aria-label="close">✕</button>
+    </div>
+
+    <form id="formCat">
+      <div class="modal-body">
+        <label>Название</label>
+        <input type="text" id="catTitle" placeholder="Напр. English / JS / Работа" required />
+
+        <label>Картинка (опционально)</label>
+        <input type="file" id="catImage" accept="image/*" />
+        <div class="filehint">
+          Изображение авто-кропается в 16:9 и сжимается (чтобы localStorage не раздулся).
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" id="catCancel">Отмена</button>
+        <button class="primary" type="submit">Создать</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MANAGE CATEGORIES -->
+  <dialog id="dlgManage">
+    <div class="modal-head">
+      <h3>Управление категориями</h3>
+      <button type="button" class="iconbtn" id="manageClose" aria-label="close">✕</button>
+    </div>
+    <div class="modal-body" id="manageBody"></div>
+    <div class="modal-foot">
+      <button type="button" id="manageClose2">Закрыть</button>
+    </div>
+  </dialog>
+
+  <!-- HISTORY -->
+  <dialog id="dlgHistory">
+    <div class="modal-head">
+      <h3 id="historyTitle">История</h3>
+      <button type="button" class="iconbtn" id="historyClose" aria-label="close">✕</button>
+    </div>
+    <div class="modal-body" id="historyBody"></div>
+    <div class="modal-foot">
+      <button type="button" id="historyClose2">Закрыть</button>
+    </div>
+  </dialog>
+
+  <!-- PROFILE -->
+  <dialog id="dlgProfile">
+    <div class="modal-head">
+      <h3>Профиль</h3>
+      <button type="button" class="iconbtn" id="profileClose" aria-label="close">✕</button>
+    </div>
+
+    <form id="formProfile">
+      <div class="modal-body">
+        <label>Имя</label>
+        <input type="text" id="pName" />
+
+        <label>Страна (текст)</label>
+        <input type="text" id="pCountry" />
+
+        <label>Аватар (опционально)</label>
+        <input type="file" id="pAvatar" accept="image/*" />
+        <div class="filehint">Аватар сжимается (квадрат 256×256).</div>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" id="profileCancel">Отмена</button>
+        <button class="primary" type="submit">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Import -->
+  <input type="file" id="importFile" accept="application/json" hidden />
+
+  <script>
+    const KEY = "prod_tracker_v3_empty";
+
+    // ====== utils
+    const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
+    const pad2 = n => String(n).padStart(2,"0");
+
+    const todayISO = () => {
+      const d = new Date();
+      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    };
+
+    const toMinutes = hours => Math.round(parseFloat(hours) * 60);
+    const fromMinutes = mins => (mins / 60);
+
+    const fmtHours = (mins) => {
+      const h = fromMinutes(mins);
+      const rounded = Math.round(h * 10) / 10;
+      return `${rounded}`.replace(".", ",");
+    };
+
+    function startOfRange14() {
+      const d = new Date();
+      d.setHours(0,0,0,0);
+      d.setDate(d.getDate() - 13);
+      return d;
+    }
+    function inLast14Days(dateISO) {
+      const d = new Date(dateISO + "T00:00:00");
+      return d >= startOfRange14();
+    }
+
+    // ====== image helpers
+    function fileToDataUrl(file){
+      return new Promise((resolve,reject)=>{
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    async function dataUrlToImage(dataUrl){
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((res, rej) => {
+        img.onload = () => res();
+        img.onerror = rej;
+      });
+      return img;
+    }
+
+    // crop to aspect ratio (center crop)
+    function computeCrop(srcW, srcH, targetAspect){
+      const srcAspect = srcW / srcH;
+      if (srcAspect > targetAspect) {
+        // too wide -> crop left/right
+        const newW = Math.round(srcH * targetAspect);
+        const x = Math.round((srcW - newW) / 2);
+        return { sx:x, sy:0, sw:newW, sh:srcH };
+      } else {
+        // too tall -> crop top/bottom
+        const newH = Math.round(srcW / targetAspect);
+        const y = Math.round((srcH - newH) / 2);
+        return { sx:0, sy:y, sw:srcW, sh:newH };
+      }
+    }
+
+    async function cropAndResizeToDataUrl(dataUrl, opts){
+      const img = await dataUrlToImage(dataUrl);
+
+      const aspect = opts.aspect ?? (16/9);
+      const maxW = opts.maxW ?? 640;
+      const maxH = opts.maxH ?? 360;
+      const quality = opts.quality ?? 0.8;
+      const mime = opts.mime ?? "image/jpeg";
+
+      const { sx, sy, sw, sh } = computeCrop(img.width, img.height, aspect);
+
+      // fit inside maxW/maxH keeping aspect
+      const ratio = Math.min(maxW / sw, maxH / sh, 1);
+      const outW = Math.max(1, Math.round(sw * ratio));
+      const outH = Math.max(1, Math.round(sh * ratio));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = outW;
+      canvas.height = outH;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+      return canvas.toDataURL(mime, quality);
+    }
+
+    async function fileToCategoryThumb(file){
+      const raw = await fileToDataUrl(file);
+      return await cropAndResizeToDataUrl(raw, {
+        aspect: 16/9, maxW: 640, maxH: 360, quality: 0.78, mime: "image/jpeg"
+      });
+    }
+
+    async function fileToAvatar(file){
+      const raw = await fileToDataUrl(file);
+      // square avatar: 1:1
+      return await cropAndResizeToDataUrl(raw, {
+        aspect: 1, maxW: 256, maxH: 256, quality: 0.82, mime: "image/jpeg"
+      });
+    }
+
+    // ====== default data (EMPTY categories)
+    const defaultData = {
+      profile: {
+        name: "Ziggy",
+        country: "Thailand",
+        avatarDataUrl: ""
+      },
+      categories: [],
+      entries: []
+    };
+
+    function load(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        if(!raw) return structuredClone(defaultData);
+        const parsed = JSON.parse(raw);
+        if(!parsed || !parsed.profile || !Array.isArray(parsed.categories) || !Array.isArray(parsed.entries)){
+          return structuredClone(defaultData);
+        }
+        return parsed;
+      }catch(e){
+        return structuredClone(defaultData);
+      }
+    }
+    function save(){
+      localStorage.setItem(KEY, JSON.stringify(state));
+    }
+
+    let state = load();
+
+    // ====== refs
+    const listEl = document.getElementById("list");
+    const twoWeeksTotalEl = document.getElementById("twoWeeksTotal");
+    const chipAllEl = document.getElementById("chipAll");
+    const lvlNumEl = document.getElementById("lvlNum");
+    const lvlTextEl = document.getElementById("lvlText");
+    const profileNameEl = document.getElementById("profileName");
+    const profileCountryEl = document.getElementById("profileCountry");
+    const avatarBox = document.getElementById("avatarBox");
+
+    const dlgHours = document.getElementById("dlgHours");
+    const dlgCat = document.getElementById("dlgCat");
+    const dlgManage = document.getElementById("dlgManage");
+    const dlgHistory = document.getElementById("dlgHistory");
+    const dlgProfile = document.getElementById("dlgProfile");
+
+    const hoursCategory = document.getElementById("hoursCategory");
+    const hoursDate = document.getElementById("hoursDate");
+    const hoursValue = document.getElementById("hoursValue");
+    const hoursNote = document.getElementById("hoursNote");
+
+    const catTitle = document.getElementById("catTitle");
+    const catImage = document.getElementById("catImage");
+
+    const manageBody = document.getElementById("manageBody");
+    const historyTitle = document.getElementById("historyTitle");
+    const historyBody = document.getElementById("historyBody");
+
+    const pName = document.getElementById("pName");
+    const pCountry = document.getElementById("pCountry");
+    const pAvatar = document.getElementById("pAvatar");
+
+    const importFile = document.getElementById("importFile");
+
+    // ====== calculations
+    function totalsByCategory(){
+      const byCat = new Map();
+      for(const c of state.categories){
+        byCat.set(c.id, { total:0, last14:0, lastDate:"" });
+      }
+      for(const e of state.entries){
+        const rec = byCat.get(e.categoryId);
+        if(!rec) continue;
+        rec.total += e.minutes;
+        if(inLast14Days(e.dateISO)) rec.last14 += e.minutes;
+        if(!rec.lastDate || e.dateISO > rec.lastDate) rec.lastDate = e.dateISO;
+      }
+      return byCat;
+    }
+    function totalAll(){ return state.entries.reduce((s,e)=>s+e.minutes,0); }
+    function totalLast14(){ return state.entries.filter(e=>inLast14Days(e.dateISO)).reduce((s,e)=>s+e.minutes,0); }
+
+    // XP/Level: 1 минута = 1 XP
+    function xpTotal(){ return totalAll(); }
+    function levelFromXP(xp){ return Math.floor(Math.sqrt(xp / 120)) + 1; }
+
+    // ====== render
+    function renderProfile(){
+      profileNameEl.textContent = state.profile.name || "";
+      profileCountryEl.textContent = state.profile.country || "";
+      avatarBox.innerHTML = "";
+      if(state.profile.avatarDataUrl){
+        const img = document.createElement("img");
+        img.src = state.profile.avatarDataUrl;
+        avatarBox.appendChild(img);
+      } else {
+        const ph = document.createElement("span");
+        ph.className = "ph";
+        ph.textContent = "👤";
+        avatarBox.appendChild(ph);
+      }
+    }
+
+    function renderStats(){
+      const last14 = totalLast14();
+      const all = totalAll();
+      twoWeeksTotalEl.textContent = `${fmtHours(last14)} ч. за последние 2 недели`;
+      chipAllEl.textContent = `Всего: ${fmtHours(all)} ч.`;
+
+      const xp = xpTotal();
+      const lvl = levelFromXP(xp);
+      lvlNumEl.textContent = String(lvl);
+      lvlTextEl.textContent = `XP: ${xp}`;
+    }
+
+    function renderCategorySelect(){
+      hoursCategory.innerHTML = "";
+      for(const c of state.categories){
+        const opt = document.createElement("option");
+        opt.value = c.id;
+        opt.textContent = c.title;
+        hoursCategory.appendChild(opt);
+      }
+    }
+
+    function renderList(){
+      const byCat = totalsByCategory();
+
+      if(!state.categories.length){
+        listEl.innerHTML = `
+          <div class="empty">
+            Категорий пока нет. Нажми <b>“+ Категория”</b> и добавь свои: English, JS, Работа, Спортзал и т.д.
+          </div>
+        `;
+        return;
+      }
+
+      const cats = [...state.categories].sort((a,b)=>{
+        const A = byCat.get(a.id)?.last14 || 0;
+        const B = byCat.get(b.id)?.last14 || 0;
+        if(B !== A) return B - A;
+        const At = byCat.get(a.id)?.total || 0;
+        const Bt = byCat.get(b.id)?.total || 0;
+        return Bt - At;
+      });
+
+      const maxLast14 = Math.max(1, ...state.categories.map(x => (byCat.get(x.id)?.last14 || 0)));
+
+      listEl.innerHTML = "";
+      for(const c of cats){
+        const t = byCat.get(c.id) || { total:0, last14:0, lastDate:"" };
+
+        const row = document.createElement("div");
+        row.className = "row";
+
+        row.onclick = (e) => {
+          if (e.target.closest(".iconbtn")) return;
+          openHistory(c.id);
+        };
+
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+        if(c.imageDataUrl){
+          const img = document.createElement("img");
+          img.src = c.imageDataUrl;
+          thumb.appendChild(img);
+        }else{
+          const ph = document.createElement("div");
+          ph.className = "ph";
+          ph.textContent = "NO IMAGE";
+          thumb.appendChild(ph);
+        }
+
+        const main = document.createElement("div");
+        main.className = "r-main";
+
+        const title = document.createElement("p");
+        title.className = "r-title";
+        title.textContent = c.title;
+
+        const sub = document.createElement("div");
+        sub.className = "r-sub";
+        const s1 = document.createElement("span");
+        s1.innerHTML = `<b>${fmtHours(t.total)}</b> ч. всего`;
+        const s2 = document.createElement("span");
+        s2.innerHTML = `<b>${fmtHours(t.last14)}</b> ч. за 2 недели`;
+        const s3 = document.createElement("span");
+        s3.innerHTML = `последнее: <b>${t.lastDate ? t.lastDate.split("-").reverse().join(".") : "—"}</b>`;
+        sub.append(s1,s2,s3);
+
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        const fill = document.createElement("i");
+        const pct = Math.min(100, Math.round((t.last14 / maxLast14) * 100));
+        fill.style.width = pct + "%";
+        bar.appendChild(fill);
+
+        main.append(title, sub, bar);
+
+        const actions = document.createElement("div");
+        actions.className = "r-actions";
+
+        const addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "iconbtn";
+        addBtn.title = "Добавить часы в эту категорию";
+        addBtn.textContent = "+";
+        addBtn.onclick = () => openAddHours(c.id);
+
+        actions.appendChild(addBtn);
+
+        row.append(thumb, main, actions);
+        listEl.appendChild(row);
+      }
+    }
+
+    function renderAll(){
+      renderProfile();
+      renderStats();
+      renderCategorySelect();
+      renderList();
+    }
+
+    // ====== open dialogs
+    function openAddHours(categoryId){
+      if(!state.categories.length){
+        // нет категорий — смысла добавлять часы нет
+        openAddCategory();
+        return;
+      }
+      renderCategorySelect();
+      hoursDate.value = todayISO();
+      hoursValue.value = "";
+      hoursNote.value = "";
+      if(categoryId) hoursCategory.value = categoryId;
+      dlgHours.showModal();
+    }
+
+    function openAddCategory(){
+      catTitle.value = "";
+      catImage.value = "";
+      dlgCat.showModal();
+    }
+
+    function openManage(){
+      const byCat = totalsByCategory();
+      manageBody.innerHTML = "";
+
+      if(!state.categories.length){
+        manageBody.innerHTML = "<div class='muted'>Категорий нет. Создай через “+ Категория”.</div>";
+        dlgManage.showModal();
+        return;
+      }
+
+      for(const c of state.categories){
+        const box = document.createElement("div");
+        box.style.padding = "10px 0";
+        box.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+
+        const row = document.createElement("div");
+        row.style.display="flex";
+        row.style.gap="10px";
+        row.style.alignItems="center";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = c.title;
+        input.onchange = () => {
+          const v = input.value.trim();
+          if(v) c.title = v;
+          save(); renderAll(); openManage();
+        };
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "danger";
+        del.textContent = "Удалить";
+        del.onclick = () => {
+          state.entries = state.entries.filter(e => e.categoryId !== c.id);
+          state.categories = state.categories.filter(x => x.id !== c.id);
+          save(); renderAll(); openManage();
+        };
+
+        const t = byCat.get(c.id) || { total:0, last14:0 };
+        const stats = document.createElement("div");
+        stats.className = "muted";
+        stats.style.marginTop="8px";
+        stats.textContent = `Всего: ${fmtHours(t.total)} ч • 2 недели: ${fmtHours(t.last14)} ч`;
+
+        row.append(input, del);
+        box.append(row, stats);
+        manageBody.appendChild(box);
+      }
+
+      dlgManage.showModal();
+    }
+
+    function openHistory(categoryId){
+      const cat = state.categories.find(c => c.id === categoryId);
+      if(!cat) return;
+
+      historyTitle.textContent = "История: " + cat.title;
+      historyBody.innerHTML = "";
+
+      const entries = state.entries
+        .filter(e => e.categoryId === categoryId)
+        .sort((a,b)=> b.dateISO.localeCompare(a.dateISO));
+
+      if(!entries.length){
+        historyBody.innerHTML = "<div class='muted'>Пока нет записей</div>";
+        dlgHistory.showModal();
+        return;
+      }
+
+      for(const e of entries){
+        const item = document.createElement("div");
+        item.className = "history-item";
+
+        const top = document.createElement("div");
+        top.className = "history-top";
+
+        const left = document.createElement("div");
+        left.innerHTML = `<b>${fmtHours(e.minutes)} ч.</b> • ${e.dateISO.split("-").reverse().join(".")}`;
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "danger";
+        del.textContent = "Удалить";
+        del.onclick = () => {
+          state.entries = state.entries.filter(x => x.id !== e.id);
+          save(); renderAll(); openHistory(categoryId);
+        };
+
+        top.append(left, del);
+        item.appendChild(top);
+
+        if(e.note){
+          const note = document.createElement("div");
+          note.className = "muted history-note";
+          note.textContent = e.note;
+          item.appendChild(note);
+        }
+
+        historyBody.appendChild(item);
+      }
+
+      dlgHistory.showModal();
+    }
+
+    function openProfile(){
+      pName.value = state.profile.name || "";
+      pCountry.value = state.profile.country || "";
+      pAvatar.value = "";
+      dlgProfile.showModal();
+    }
+
+    // ====== close buttons
+    document.getElementById("hoursClose").onclick = () => dlgHours.close();
+    document.getElementById("hoursCancel").onclick = () => dlgHours.close();
+
+    document.getElementById("catClose").onclick = () => dlgCat.close();
+    document.getElementById("catCancel").onclick = () => dlgCat.close();
+
+    document.getElementById("manageClose").onclick = () => dlgManage.close();
+    document.getElementById("manageClose2").onclick = () => dlgManage.close();
+
+    document.getElementById("historyClose").onclick = () => dlgHistory.close();
+    document.getElementById("historyClose2").onclick = () => dlgHistory.close();
+
+    document.getElementById("profileClose").onclick = () => dlgProfile.close();
+    document.getElementById("profileCancel").onclick = () => dlgProfile.close();
+
+    // ====== top buttons
+    document.getElementById("btnAddHours").onclick = () => openAddHours();
+    document.getElementById("btnAddCategory").onclick = () => openAddCategory();
+    document.getElementById("btnManage").onclick = () => openManage();
+    document.getElementById("btnProfile").onclick = () => openProfile();
+
+    // ====== submits
+    document.getElementById("formHours").addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const catId = hoursCategory.value;
+      const dateISO = hoursDate.value;
+      const hours = hoursValue.value;
+      if(!catId || !dateISO || !hours) return;
+
+      state.entries.push({
+        id: uid(),
+        categoryId: catId,
+        dateISO,
+        minutes: toMinutes(hours),
+        note: (hoursNote.value || "").trim()
+      });
+
+      save();
+      dlgHours.close();
+      renderAll();
+    });
+
+    document.getElementById("formCat").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const title = (catTitle.value || "").trim();
+      if(!title) return;
+
+      let imageDataUrl = "";
+      if(catImage.files && catImage.files[0]){
+        imageDataUrl = await fileToCategoryThumb(catImage.files[0]);
+      }
+
+      state.categories.push({ id: uid(), title, imageDataUrl });
+      save();
+      dlgCat.close();
+      renderAll();
+    });
+
+    document.getElementById("formProfile").addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      state.profile.name = (pName.value || "").trim() || state.profile.name;
+      state.profile.country = (pCountry.value || "").trim() || state.profile.country;
+
+      if(pAvatar.files && pAvatar.files[0]){
+        state.profile.avatarDataUrl = await fileToAvatar(pAvatar.files[0]);
+      }
+
+      save();
+      dlgProfile.close();
+      renderAll();
+    });
+
+    // ====== export/import
+    document.getElementById("btnExport").onclick = () => {
+      const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "prod-tracker-backup.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    document.getElementById("btnImport").onclick = () => importFile.click();
+
+    importFile.addEventListener("change", async ()=>{
+      const file = importFile.files && importFile.files[0];
+      if(!file) return;
+      try{
+        const txt = await file.text();
+        const parsed = JSON.parse(txt);
+
+        if(!parsed || !parsed.profile || !Array.isArray(parsed.categories) || !Array.isArray(parsed.entries)){
+          alert("Файл не похож на бэкап трекера.");
+          return;
+        }
+
+        state = parsed;
+        save();
+        renderAll();
+      }catch{
+        alert("Не удалось прочитать JSON.");
+      }finally{
+        importFile.value = "";
+      }
+    });
+
+    // ====== init (NO auto categories!)
+    renderAll();
+  </script>
+</body>
+</html>
