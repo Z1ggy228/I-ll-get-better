@@ -181,9 +181,15 @@
       border:1px solid rgba(255,95,95,.2);
     }
     .orders-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .orders-title{margin:0;font-size:20px;letter-spacing:.3px;text-transform:uppercase}
+    .orders-title{margin:0;font-size:20px;letter-spacing:.3px}
     .orders-meta{display:flex;gap:8px;flex-wrap:wrap}
-    .orders-meta .chip{padding:7px 10px}
+    .orders-meta .chip{
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+    }
     .orders-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 
     .order-item{
@@ -208,8 +214,11 @@
     .deadline.danger,.deadline.overdue{color:#ff8585;text-shadow:0 0 10px rgba(255,80,80,.34)}
     .deadline.done{color:#84e8a6;text-shadow:0 0 10px rgba(110,220,150,.28)}
 
-    .order-bar{margin-top:12px;height:8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);overflow:hidden}
-    .order-bar > i{display:block;height:100%;width:0;background:rgba(255,120,120,.4)}
+    .order-bar{
+      margin-top:12px;height:8px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.08);overflow:hidden;display:flex;justify-content:flex-end
+    }
+    .order-bar > i{display:block;height:100%;width:0;background:rgba(143,179,255,.55)}
     .order-item.is-warn .order-bar > i{background:rgba(255,189,89,.6)}
     .order-item.is-danger .order-bar > i,
     .order-item.is-overdue .order-bar > i{background:rgba(255,70,70,.75)}
@@ -1058,7 +1067,7 @@
       const orderNote = document.getElementById("orderNote");
 
       let currentView = "tracker";
-      const uiState = { expanded: new Set(), showSubtaskForm: new Set() };
+      const uiState = { expanded: new Set(), showSubtaskForm: new Set(), subtaskDrafts: new Map() };
 
       function de(entity){
         const ta = document.createElement("textarea");
@@ -1229,16 +1238,32 @@
 
         wrap.appendChild(list);
 
+        const draft = uiState.subtaskDrafts.get(order.id) || {
+          title: "",
+          deadline: toInputDateTime(new Date(Date.now() + 12 * 3600000))
+        };
+
         const form = document.createElement("div");
         form.className = "subtask-form" + (uiState.showSubtaskForm.has(order.id) ? " open" : "");
 
         const stTitle = document.createElement("input");
         stTitle.type = "text";
         stTitle.placeholder = T.newSubtask;
+        stTitle.value = draft.title || "";
 
         const stDeadline = document.createElement("input");
         stDeadline.type = "datetime-local";
-        stDeadline.value = toInputDateTime(new Date(Date.now() + 12 * 3600000));
+        stDeadline.value = draft.deadline || toInputDateTime(new Date(Date.now() + 12 * 3600000));
+
+        stTitle.oninput = function(){
+          const cur = uiState.subtaskDrafts.get(order.id) || {};
+          uiState.subtaskDrafts.set(order.id, { title: stTitle.value, deadline: cur.deadline || stDeadline.value });
+        };
+
+        stDeadline.oninput = function(){
+          const cur = uiState.subtaskDrafts.get(order.id) || {};
+          uiState.subtaskDrafts.set(order.id, { title: cur.title || stTitle.value, deadline: stDeadline.value });
+        };
 
         const addBtn = document.createElement("button");
         addBtn.type = "button";
@@ -1257,13 +1282,13 @@
             completedAtISO: null
           });
           uiState.showSubtaskForm.delete(order.id);
+          uiState.subtaskDrafts.delete(order.id);
           save();
           renderOrders();
         };
 
         form.append(stTitle, stDeadline, addBtn);
         wrap.appendChild(form);
-
         container.appendChild(wrap);
       }
 
@@ -1299,10 +1324,10 @@
           const isExpanded = uiState.expanded.has(order.id);
 
           const totalSpan = Math.max(1, deadlineMs - createdMs);
-          const elapsed = order.completedAtISO
-            ? Math.max(0, Math.min(totalSpan, new Date(order.completedAtISO).getTime() - createdMs))
-            : Math.max(0, Math.min(totalSpan, nowMs - createdMs));
-          const progress = Math.min(100, Math.round((elapsed / totalSpan) * 100));
+          const remainingMs = order.completedAtISO
+            ? Math.max(0, Math.min(totalSpan, deadlineMs - new Date(order.completedAtISO).getTime()))
+            : Math.max(0, Math.min(totalSpan, deadlineMs - nowMs));
+          const progress = Math.min(100, Math.round((remainingMs / totalSpan) * 100));
 
           const box = document.createElement("div");
           box.className = "order-item" +
@@ -1370,6 +1395,12 @@
           addSubBtn.onclick = function(){
             uiState.expanded.add(order.id);
             uiState.showSubtaskForm.add(order.id);
+            if(!uiState.subtaskDrafts.has(order.id)){
+              uiState.subtaskDrafts.set(order.id, {
+                title: "",
+                deadline: toInputDateTime(new Date(Date.now() + 12 * 3600000))
+              });
+            }
             renderOrders();
           };
 
@@ -1492,7 +1523,10 @@
       tabOrders.onclick = function(){ setView("orders"); };
 
       setInterval(function(){
-        if(currentView === "orders") renderOrders();
+        if(currentView !== "orders") return;
+        const ae = document.activeElement;
+        if(ae && ae.closest && (ae.closest(".subtask-form") || ae.closest("#dlgOrder"))) return;
+        renderOrders();
       }, 1000);
 
       document.addEventListener("visibilitychange", function(){
