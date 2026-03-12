@@ -1380,7 +1380,7 @@
           const remainingMs = order.completedAtISO
             ? Math.max(0, Math.min(totalSpan, deadlineMs - new Date(order.completedAtISO).getTime()))
             : Math.max(0, Math.min(totalSpan, deadlineMs - nowMs));
-          const progress = Math.min(100, Math.round((remainingMs / totalSpan) * 100));
+          const progress = Math.max(0, Math.min(100, (remainingMs / totalSpan) * 100));
 
           const box = document.createElement("div");
           box.className = "order-item" +
@@ -1429,7 +1429,7 @@
           const bar = document.createElement("div");
           bar.className = "order-bar";
           const fill = document.createElement("i");
-          fill.style.width = (order.completedAtISO ? 100 : progress) + "%";
+          fill.style.width = (order.completedAtISO ? 100 : progress.toFixed(4)) + "%";
           bar.appendChild(fill);
 
           box.append(top, bar);
