@@ -209,7 +209,21 @@
     .order-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
     .order-title{margin:0 0 6px;font-size:19px;font-weight:900;line-height:1.2}
     .order-sub{font-size:12px;color:var(--muted)}
-    .order-price{font-size:16px;font-weight:900;color:#84e8a6;margin-top:6px}
+    .order-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .order-pill{
+      display:inline-flex;align-items:center;
+      padding:4px 10px;border-radius:999px;
+      font-size:12px;font-weight:700;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);color:var(--text)
+    }
+    .order-pill.price{
+      color:#84e8a6;border-color:rgba(110,220,150,.4);background:rgba(110,220,150,.12)
+    }
+    .order-progress-meta{
+      margin-top:10px;display:flex;justify-content:space-between;gap:10px;
+      font-size:12px;color:var(--muted)
+    }
 
     .deadline{font-weight:900;font-size:28px;line-height:1;text-align:right;letter-spacing:.4px}
     .deadline.ok{color:#c8e6d5}
@@ -1126,7 +1140,9 @@
         expand: de("&#1056;&#1072;&#1079;&#1074;&#1077;&#1088;&#1085;&#1091;&#1090;&#1100;"),
         collapse: de("&#1057;&#1074;&#1077;&#1088;&#1085;&#1091;&#1090;&#1100;"),
         addSubtask: de("+ &#1055;&#1086;&#1076;&#1079;&#1072;&#1076;&#1072;&#1095;&#1072;"),
-        dn: de("&#1076;&#1085;")
+        dn: de("&#1076;&#1085;"),
+        remainingPct: de("&#1054;&#1089;&#1090;&#1072;&#1083;&#1086;&#1089;&#1100;"),
+        spentPct: de("&#1048;&#1079;&#1088;&#1072;&#1089;&#1093;&#1086;&#1076;&#1086;&#1074;&#1072;&#1085;&#1086;")
       };
 
       function pad2(n){ return String(n).padStart(2, "0"); }
@@ -1397,15 +1413,23 @@
           title.className = "order-title";
           title.textContent = order.title || T.untitled;
 
-          const sub = document.createElement("div");
-          sub.className = "order-sub";
-          sub.textContent = T.customer + ": " + (order.customer || "-") + " | " + T.priority + ": " + (order.priority || T.noPriority);
+          const meta = document.createElement("div");
+          meta.className = "order-meta";
 
-          const price = document.createElement("div");
-          price.className = "order-price";
-          price.textContent = T.price + ": " + (order.price || "-");
+          const customerPill = document.createElement("span");
+          customerPill.className = "order-pill";
+          customerPill.textContent = T.customer + ": " + (order.customer || "-");
 
-          left.append(title, sub, price);
+          const prioPill = document.createElement("span");
+          prioPill.className = "order-pill";
+          prioPill.textContent = T.priority + ": " + (order.priority || T.noPriority);
+
+          const pricePill = document.createElement("span");
+          pricePill.className = "order-pill price";
+          pricePill.textContent = T.price + ": " + (order.price || "-");
+
+          meta.append(customerPill, prioPill, pricePill);
+          left.append(title, meta);
 
           const right = document.createElement("div");
           const dead = document.createElement("div");
@@ -1426,13 +1450,24 @@
           right.append(dead, abs);
           top.append(left, right);
 
+          const displayProgress = order.completedAtISO ? 100 : progress;
+          const spentProgress = Math.max(0, 100 - displayProgress);
+
+          const progressMeta = document.createElement("div");
+          progressMeta.className = "order-progress-meta";
+          const pmLeft = document.createElement("span");
+          pmLeft.textContent = T.remainingPct + ": " + displayProgress.toFixed(1) + "%";
+          const pmRight = document.createElement("span");
+          pmRight.textContent = T.spentPct + ": " + spentProgress.toFixed(1) + "%";
+          progressMeta.append(pmLeft, pmRight);
+
           const bar = document.createElement("div");
           bar.className = "order-bar";
           const fill = document.createElement("i");
-          fill.style.width = (order.completedAtISO ? 100 : progress.toFixed(4)) + "%";
+          fill.style.width = displayProgress.toFixed(4) + "%";
           bar.appendChild(fill);
 
-          box.append(top, bar);
+          box.append(top, progressMeta, bar);
 
           const actions = document.createElement("div");
           actions.className = "order-actions";
