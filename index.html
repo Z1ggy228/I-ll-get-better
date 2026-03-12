@@ -186,7 +186,7 @@
     .order-item.is-overdue{border-color:rgba(255,90,90,.45)}
     .order-item.is-danger{border-color:rgba(255,120,120,.35)}
     .order-item.is-warn{border-color:rgba(255,189,89,.35)}
-    .order-item.is-done{opacity:.72}
+    .order-item.is-done{opacity:.9;border-color:rgba(110,220,150,.45)}
     .order-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
     .order-title{margin:0 0 6px;font-size:15px}
     .order-sub{font-size:12px;color:var(--muted)}
@@ -194,13 +194,25 @@
     .deadline.ok{color:#9ed8b6}
     .deadline.warn{color:#ffd27d}
     .deadline.danger,.deadline.overdue{color:#ff8c8c}
-    .deadline.done{color:var(--muted)}
+    .deadline.done{color:#88e3a8}
     .order-bar{margin-top:10px;height:7px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);overflow:hidden}
     .order-bar > i{display:block;height:100%;width:0;background:rgba(143,179,255,.35)}
     .order-item.is-warn .order-bar > i{background:rgba(255,189,89,.45)}
     .order-item.is-danger .order-bar > i,
-    .order-item.is-overdue .order-bar > i{background:rgba(255,90,90,.55)}
+     .order-item.is-overdue .order-bar > i{background:rgba(255,90,90,.55)}
+    .order-item.is-done .order-bar > i{background:rgba(110,220,150,.55)}
     .order-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .subtasks{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}
+    .subtasks summary{cursor:pointer;color:var(--muted);font-size:12px;list-style:none}
+    .subtasks summary::-webkit-details-marker{display:none}
+    .subtasks-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .subtask-item{border:1px solid var(--line);border-radius:10px;padding:8px;background:rgba(255,255,255,.02)}
+    .subtask-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .subtask-title{font-size:13px;font-weight:700;margin:0 0 3px}
+    .subtask-meta{font-size:12px;color:var(--muted)}
+    .subtask-actions{display:flex;gap:8px;margin-top:8px}
+    .subtask-form{display:grid;grid-template-columns:1fr 210px auto;gap:8px;margin-top:10px}
+    @media (max-width:720px){.subtask-form{grid-template-columns:1fr}}
     input[type="datetime-local"]{background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 10px;width:100%;outline:none}
   </style>
 </head>
@@ -208,8 +220,8 @@
 <body>
   <div class="wrap">
     <div class="tabs">
-      <button type="button" class="tabbtn active" id="tabTracker">Tracker</button>
-      <button type="button" class="tabbtn" id="tabOrders">Orders</button>
+      <button type="button" class="tabbtn active" id="tabTracker">&#1058;&#1088;&#1077;&#1082;&#1077;&#1088;</button>
+      <button type="button" class="tabbtn" id="tabOrders">&#1047;&#1072;&#1082;&#1072;&#1079;&#1099;</button>
     </div>
 
     <section class="view active" id="viewTracker">
@@ -274,14 +286,14 @@
       <div class="card orders-wrap">
         <div class="orders-head">
           <div>
-            <h2 class="orders-title">Orders and Deadlines</h2>
-            <div class="muted">Timer is based on real time and keeps running outside this tab.</div>
+            <h2 class="orders-title">&#1047;&#1072;&#1082;&#1072;&#1079;&#1099; &#1080; &#1076;&#1077;&#1076;&#1083;&#1072;&#1081;&#1085;&#1099;</h2>
+            <div class="muted">&#1058;&#1072;&#1081;&#1084;&#1077;&#1088; &#1080;&#1076;&#1077;&#1090; &#1087;&#1086; &#1088;&#1077;&#1072;&#1083;&#1100;&#1085;&#1086;&#1084;&#1091; &#1074;&#1088;&#1077;&#1084;&#1077;&#1085;&#1080; &#1080; &#1085;&#1077; &#1079;&#1072;&#1074;&#1080;&#1089;&#1080;&#1090; &#1086;&#1090; &#1086;&#1090;&#1082;&#1088;&#1099;&#1090;&#1086;&#1081; &#1074;&#1082;&#1083;&#1072;&#1076;&#1082;&#1080;.</div>
           </div>
-          <button type="button" class="primary" id="btnAddOrder">+ Order</button>
+          <button type="button" class="primary" id="btnAddOrder">+ &#1047;&#1072;&#1082;&#1072;&#1079;</button>
         </div>
         <div class="orders-meta">
-          <div class="chip" id="ordersActiveChip">Active: 0</div>
-          <div class="chip" id="ordersRiskChip">Urgent: 0</div>
+          <div class="chip" id="ordersActiveChip">&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1093;: 0</div>
+          <div class="chip" id="ordersRiskChip">&#1057;&#1088;&#1086;&#1095;&#1085;&#1099;&#1093;: 0</div>
         </div>
         <div class="orders-list" id="ordersList"></div>
       </div>
@@ -402,27 +414,27 @@
   <!-- ADD ORDER -->
   <dialog id="dlgOrder">
     <div class="modal-head">
-      <h3>New Order</h3>
+      <h3>&#1053;&#1086;&#1074;&#1099;&#1081; &#1079;&#1072;&#1082;&#1072;&#1079;</h3>
       <button type="button" class="iconbtn" id="orderClose" aria-label="close">X</button>
     </div>
 
     <form id="formOrder">
       <div class="modal-body">
-        <label>Order title</label>
-        <input type="text" id="orderTitle" placeholder="Landing / Bot / UI fixes" required />
+        <label>&#1047;&#1072;&#1075;&#1086;&#1083;&#1086;&#1074;&#1086;&#1082; &#1079;&#1072;&#1082;&#1072;&#1079;&#1072;</label>
+        <input type="text" id="orderTitle" placeholder="&#1042;&#1077;&#1088;&#1089;&#1090;&#1082;&#1072; / &#1041;&#1086;&#1090; / UI &#1087;&#1088;&#1072;&#1074;&#1082;&#1080;" required />
 
-        <label>Customer nickname</label>
+        <label>&#1053;&#1080;&#1082;&#1085;&#1077;&#1081;&#1084; &#1079;&#1072;&#1082;&#1072;&#1079;&#1095;&#1080;&#1082;&#1072;</label>
         <input type="text" id="orderCustomer" placeholder="@client_nick" required />
 
-        <label>Deadline</label>
+        <label>&#1044;&#1077;&#1076;&#1083;&#1072;&#1081;&#1085;</label>
         <input type="datetime-local" id="orderDeadline" required />
 
-        <label>Comment (optional)</label>
-        <input type="text" id="orderNote" placeholder="Any important details" />
+        <label>&#1050;&#1086;&#1084;&#1084;&#1077;&#1085;&#1090;&#1072;&#1088;&#1080;&#1081; (&#1086;&#1087;&#1094;&#1080;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1086;)</label>
+        <input type="text" id="orderNote" placeholder="&#1051;&#1102;&#1073;&#1099;&#1077; &#1074;&#1072;&#1078;&#1085;&#1099;&#1077; &#1076;&#1077;&#1090;&#1072;&#1083;&#1080;" />
       </div>
       <div class="modal-foot">
-        <button type="button" id="orderCancel">Cancel</button>
-        <button class="primary" type="submit">Add</button>
+        <button type="button" id="orderCancel">&#1054;&#1090;&#1084;&#1077;&#1085;&#1072;</button>
+        <button class="primary" type="submit">&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;</button>
       </div>
     </form>
   </dialog>
@@ -1006,7 +1018,6 @@
     renderAll();
   </script>
 
-
   <script>
     /* orders-extension */
     (function(){
@@ -1027,12 +1038,33 @@
 
       let currentView = "tracker";
 
-      function ensureOrdersState(){
-        if(!Array.isArray(state.orders)){
-          state.orders = [];
-          save();
-        }
+      function de(entity){
+        const ta = document.createElement("textarea");
+        ta.innerHTML = entity;
+        return ta.value;
       }
+
+      const T = {
+        active: de("&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1093;"),
+        urgent: de("&#1057;&#1088;&#1086;&#1095;&#1085;&#1099;&#1093;"),
+        noOrders: de("&#1055;&#1086;&#1082;&#1072; &#1085;&#1077;&#1090; &#1079;&#1072;&#1082;&#1072;&#1079;&#1086;&#1074;. &#1053;&#1072;&#1078;&#1084;&#1080;"),
+        addOrder: de("+ &#1047;&#1072;&#1082;&#1072;&#1079;"),
+        untitled: de("&#1041;&#1077;&#1079; &#1085;&#1072;&#1079;&#1074;&#1072;&#1085;&#1080;&#1103;"),
+        customer: de("&#1047;&#1072;&#1082;&#1072;&#1079;&#1095;&#1080;&#1082;"),
+        done: de("&#1043;&#1086;&#1090;&#1086;&#1074;&#1086;"),
+        reopen: de("&#1042;&#1077;&#1088;&#1085;&#1091;&#1090;&#1100;"),
+        del: de("&#1059;&#1076;&#1072;&#1083;&#1080;&#1090;&#1100;"),
+        plusDay: de("+1 &#1076;&#1077;&#1085;&#1100;"),
+        left: de("&#1054;&#1089;&#1090;&#1072;&#1083;&#1086;&#1089;&#1100;"),
+        overdue: de("&#1055;&#1088;&#1086;&#1089;&#1088;&#1086;&#1095;&#1077;&#1085;&#1086;"),
+        deadline: de("&#1044;&#1077;&#1076;&#1083;&#1072;&#1081;&#1085;"),
+        completedEarly: de("&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1086; &#1088;&#1072;&#1085;&#1100;&#1096;&#1077; &#1085;&#1072;"),
+        completedLate: de("&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1086; &#1089; &#1087;&#1088;&#1086;&#1089;&#1088;&#1086;&#1095;&#1082;&#1086;&#1081;"),
+        completed: de("&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1086;"),
+        subtasks: de("&#1055;&#1086;&#1076;&#1079;&#1072;&#1076;&#1072;&#1095;&#1080;"),
+        newSubtask: de("&#1053;&#1086;&#1074;&#1072;&#1103; &#1087;&#1086;&#1076;&#1079;&#1072;&#1076;&#1072;&#1095;&#1072;"),
+        add: de("&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;")
+      };
 
       function pad2(n){ return String(n).padStart(2, "0"); }
 
@@ -1044,14 +1076,13 @@
 
       function fmtDateTime(iso){
         const d = new Date(iso);
-        if(Number.isNaN(d.getTime())) return "?";
+        if(Number.isNaN(d.getTime())) return "-";
         return d.toLocaleString("ru-RU", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
       }
 
       function fmtRemaining(ms){
         const sign = ms < 0 ? -1 : 1;
         let left = Math.abs(ms);
-
         const days = Math.floor(left / 86400000);
         left -= days * 86400000;
         const hours = Math.floor(left / 3600000);
@@ -1059,18 +1090,150 @@
         const mins = Math.floor(left / 60000);
         left -= mins * 60000;
         const secs = Math.floor(left / 1000);
-
-        const body = days + "? " + pad2(hours) + ":" + pad2(mins) + ":" + pad2(secs);
+        const body = days + " дн " + pad2(hours) + ":" + pad2(mins) + ":" + pad2(secs);
         return sign < 0 ? "-" + body : body;
       }
 
-      function getRisk(order, nowMs){
-        if(order.completedAtISO) return "done";
-        const left = new Date(order.deadlineISO).getTime() - nowMs;
+      function completionText(deadlineISO, completedAtISO){
+        const deadlineMs = new Date(deadlineISO).getTime();
+        const completedMs = new Date(completedAtISO).getTime();
+        if(Number.isNaN(deadlineMs) || Number.isNaN(completedMs)) return T.completed;
+        const diff = deadlineMs - completedMs;
+        if(diff >= 0) return T.completedEarly + " " + fmtRemaining(diff);
+        return T.completedLate + " " + fmtRemaining(-diff);
+      }
+
+      function ensureOrdersState(){
+        if(!Array.isArray(state.orders)) state.orders = [];
+        for(const order of state.orders){
+          if(!Array.isArray(order.subtasks)) order.subtasks = [];
+          if(!order.createdAtISO) order.createdAtISO = new Date().toISOString();
+          for(const st of order.subtasks){
+            if(!st.id) st.id = uid();
+            if(!st.createdAtISO) st.createdAtISO = new Date().toISOString();
+            if(st.completedAtISO === undefined) st.completedAtISO = null;
+          }
+        }
+      }
+
+      function getRisk(deadlineISO, completedAtISO, nowMs){
+        if(completedAtISO) return "done";
+        const left = new Date(deadlineISO).getTime() - nowMs;
         if(left <= 0) return "overdue";
         if(left <= 6 * 3600000) return "danger";
         if(left <= 24 * 3600000) return "warn";
         return "ok";
+      }
+
+      function renderSubtasks(order, container, nowMs){
+        const details = document.createElement("details");
+        details.className = "subtasks";
+
+        const summary = document.createElement("summary");
+        summary.textContent = T.subtasks + " (" + order.subtasks.length + ")";
+        details.appendChild(summary);
+
+        const list = document.createElement("div");
+        list.className = "subtasks-list";
+
+        order.subtasks
+          .slice()
+          .sort((a,b)=>new Date(a.deadlineISO).getTime()-new Date(b.deadlineISO).getTime())
+          .forEach(st => {
+            const risk = getRisk(st.deadlineISO, st.completedAtISO, nowMs);
+            const leftMs = new Date(st.deadlineISO).getTime() - nowMs;
+
+            const item = document.createElement("div");
+            item.className = "subtask-item";
+
+            const head = document.createElement("div");
+            head.className = "subtask-head";
+
+            const left = document.createElement("div");
+            const title = document.createElement("div");
+            title.className = "subtask-title";
+            title.textContent = st.title || T.untitled;
+            const meta = document.createElement("div");
+            meta.className = "subtask-meta";
+            meta.textContent = T.deadline + ": " + fmtDateTime(st.deadlineISO);
+            left.append(title, meta);
+
+            const right = document.createElement("div");
+            right.className = "deadline " + risk;
+            if(st.completedAtISO){
+              right.textContent = completionText(st.deadlineISO, st.completedAtISO);
+            } else if(leftMs <= 0){
+              right.textContent = T.overdue + ": " + fmtRemaining(leftMs);
+            } else {
+              right.textContent = T.left + ": " + fmtRemaining(leftMs);
+            }
+
+            head.append(left, right);
+
+            const actions = document.createElement("div");
+            actions.className = "subtask-actions";
+
+            const doneBtn = document.createElement("button");
+            doneBtn.type = "button";
+            doneBtn.className = "primary";
+            doneBtn.textContent = st.completedAtISO ? T.reopen : T.done;
+            doneBtn.onclick = function(){
+              st.completedAtISO = st.completedAtISO ? null : new Date().toISOString();
+              save();
+              renderOrders();
+            };
+
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "danger";
+            delBtn.textContent = T.del;
+            delBtn.onclick = function(){
+              order.subtasks = order.subtasks.filter(x => x.id !== st.id);
+              save();
+              renderOrders();
+            };
+
+            actions.append(doneBtn, delBtn);
+            item.append(head, actions);
+            list.appendChild(item);
+          });
+
+        details.appendChild(list);
+
+        const form = document.createElement("div");
+        form.className = "subtask-form";
+
+        const stTitle = document.createElement("input");
+        stTitle.type = "text";
+        stTitle.placeholder = T.newSubtask;
+
+        const stDeadline = document.createElement("input");
+        stDeadline.type = "datetime-local";
+        stDeadline.value = toInputDateTime(new Date(Date.now() + 12 * 3600000));
+
+        const addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.textContent = T.add;
+        addBtn.onclick = function(){
+          const title = (stTitle.value || "").trim();
+          if(!title || !stDeadline.value) return;
+          const deadline = new Date(stDeadline.value);
+          if(Number.isNaN(deadline.getTime())) return;
+
+          order.subtasks.push({
+            id: uid(),
+            title,
+            deadlineISO: deadline.toISOString(),
+            createdAtISO: new Date().toISOString(),
+            completedAtISO: null
+          });
+          save();
+          renderOrders();
+        };
+
+        form.append(stTitle, stDeadline, addBtn);
+        details.appendChild(form);
+        container.appendChild(details);
       }
 
       function renderOrders(){
@@ -1080,11 +1243,11 @@
         const active = state.orders.filter(o => !o.completedAtISO);
         const risk = active.filter(o => (new Date(o.deadlineISO).getTime() - nowMs) <= 24 * 3600000);
 
-        ordersActiveChip.textContent = "Active: " + active.length;
-        ordersRiskChip.textContent = "Urgent: " + risk.length;
+        ordersActiveChip.textContent = T.active + ": " + active.length;
+        ordersRiskChip.textContent = T.urgent + ": " + risk.length;
 
         if(!state.orders.length){
-          ordersList.innerHTML = '<div class="empty">No orders yet. Click <b>"+ Order"</b>.</div>';
+          ordersList.innerHTML = '<div class="empty">' + T.noOrders + ' <b>"' + T.addOrder + '"</b>.</div>';
           return;
         }
 
@@ -1100,7 +1263,7 @@
         sorted.forEach(order => {
           const deadlineMs = new Date(order.deadlineISO).getTime();
           const createdMs = new Date(order.createdAtISO || Date.now()).getTime();
-          const riskLevel = getRisk(order, nowMs);
+          const riskLevel = getRisk(order.deadlineISO, order.completedAtISO, nowMs);
           const leftMs = deadlineMs - nowMs;
 
           const totalSpan = Math.max(1, deadlineMs - createdMs);
@@ -1122,27 +1285,27 @@
           const left = document.createElement("div");
           const title = document.createElement("h3");
           title.className = "order-title";
-          title.textContent = order.title || "Untitled";
+          title.textContent = order.title || T.untitled;
 
           const sub = document.createElement("div");
           sub.className = "order-sub";
-          sub.textContent = "Customer: " + (order.customer || "-");
+          sub.textContent = T.customer + ": " + (order.customer || "-");
           left.append(title, sub);
 
           const right = document.createElement("div");
           const dead = document.createElement("div");
           dead.className = "deadline " + riskLevel;
           if(order.completedAtISO){
-            dead.textContent = "Done";
+            dead.textContent = completionText(order.deadlineISO, order.completedAtISO);
           } else if(leftMs <= 0){
-            dead.textContent = "Overdue: " + fmtRemaining(leftMs);
+            dead.textContent = T.overdue + ": " + fmtRemaining(leftMs);
           } else {
-            dead.textContent = "Left: " + fmtRemaining(leftMs);
+            dead.textContent = T.left + ": " + fmtRemaining(leftMs);
           }
 
           const abs = document.createElement("div");
           abs.className = "order-sub";
-          abs.textContent = "Deadline: " + fmtDateTime(order.deadlineISO);
+          abs.textContent = T.deadline + ": " + fmtDateTime(order.deadlineISO);
 
           right.append(dead, abs);
           top.append(left, right);
@@ -1169,7 +1332,7 @@
           const doneBtn = document.createElement("button");
           doneBtn.type = "button";
           doneBtn.className = "primary";
-          doneBtn.textContent = order.completedAtISO ? "Reopen" : "Done";
+          doneBtn.textContent = order.completedAtISO ? T.reopen : T.done;
           doneBtn.onclick = function(){
             order.completedAtISO = order.completedAtISO ? null : new Date().toISOString();
             save();
@@ -1178,7 +1341,7 @@
 
           const postponeBtn = document.createElement("button");
           postponeBtn.type = "button";
-          postponeBtn.textContent = "+1 day";
+          postponeBtn.textContent = T.plusDay;
           postponeBtn.onclick = function(){
             const d = new Date(order.deadlineISO);
             d.setDate(d.getDate() + 1);
@@ -1190,7 +1353,7 @@
           const delBtn = document.createElement("button");
           delBtn.type = "button";
           delBtn.className = "danger";
-          delBtn.textContent = "Delete";
+          delBtn.textContent = T.del;
           delBtn.onclick = function(){
             state.orders = state.orders.filter(x => x.id !== order.id);
             save();
@@ -1199,6 +1362,8 @@
 
           actions.append(doneBtn, postponeBtn, delBtn);
           box.appendChild(actions);
+
+          renderSubtasks(order, box, nowMs);
           ordersList.appendChild(box);
         });
       }
@@ -1247,12 +1412,13 @@
         ensureOrdersState();
         state.orders.push({
           id: uid(),
-          title: title,
-          customer: customer,
+          title,
+          customer,
           deadlineISO: deadline.toISOString(),
-          note: note,
+          note,
           createdAtISO: new Date().toISOString(),
-          completedAtISO: null
+          completedAtISO: null,
+          subtasks: []
         });
 
         save();
