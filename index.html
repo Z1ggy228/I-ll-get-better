@@ -190,6 +190,8 @@
       background:rgba(255,255,255,.08);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
     }
+    .orders-filter-btn{cursor:pointer;color:var(--muted)}
+    .orders-filter-btn.active{color:var(--text);border-color:rgba(255,110,110,.55);background:rgba(255,110,110,.2)}
     .orders-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 
     .order-item{
@@ -324,7 +326,8 @@
         </div>
         <div class="orders-meta">
           <div class="chip" id="ordersActiveChip">&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1093;: 0</div>
-          <div class="chip" id="ordersRiskChip">&#1057;&#1088;&#1086;&#1095;&#1085;&#1099;&#1093;: 0</div>
+          <button type="button" class="chip orders-filter-btn active" id="ordersTabActive">&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1077; &#1076;&#1077;&#1076;&#1083;&#1072;&#1081;&#1085;&#1099;</button>
+          <button type="button" class="chip orders-filter-btn" id="ordersTabDone">&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1085;&#1099;&#1077;</button>
         </div>
         <div class="orders-list" id="ordersList"></div>
       </div>
@@ -1071,7 +1074,8 @@
 
       const ordersList = document.getElementById("ordersList");
       const ordersActiveChip = document.getElementById("ordersActiveChip");
-      const ordersRiskChip = document.getElementById("ordersRiskChip");
+      const ordersTabActive = document.getElementById("ordersTabActive");
+      const ordersTabDone = document.getElementById("ordersTabDone");
 
       const dlgOrder = document.getElementById("dlgOrder");
       const orderTitle = document.getElementById("orderTitle");
@@ -1082,6 +1086,7 @@
       const orderNote = document.getElementById("orderNote");
 
       let currentView = "tracker";
+      let ordersMode = "active";
       const uiState = { expanded: new Set(), showSubtaskForm: new Set(), subtaskDrafts: new Map() };
 
       function de(entity){
@@ -1092,8 +1097,9 @@
 
       const T = {
         active: de("&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1093;"),
-        urgent: de("&#1057;&#1088;&#1086;&#1095;&#1085;&#1099;&#1093;"),
+        completedPlural: de("&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1085;&#1099;&#1093;"),
         noOrders: de("&#1055;&#1086;&#1082;&#1072; &#1085;&#1077;&#1090; &#1079;&#1072;&#1082;&#1072;&#1079;&#1086;&#1074;. &#1053;&#1072;&#1078;&#1084;&#1080;"),
+        noCompleted: de("&#1055;&#1086;&#1082;&#1072; &#1085;&#1077;&#1090; &#1074;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1085;&#1099;&#1093; &#1079;&#1072;&#1082;&#1072;&#1079;&#1086;&#1074;."),
         addOrder: de("+ &#1047;&#1072;&#1082;&#1072;&#1079;"),
         untitled: de("&#1041;&#1077;&#1079; &#1085;&#1072;&#1079;&#1074;&#1072;&#1085;&#1080;&#1103;"),
         customer: de("&#1047;&#1072;&#1082;&#1072;&#1079;&#1095;&#1080;&#1082;"),
@@ -1329,24 +1335,34 @@
 
         const nowMs = Date.now();
         const active = state.orders.filter(o => !o.completedAtISO);
-        const risk = active.filter(o => (new Date(o.deadlineISO).getTime() - nowMs) <= 24 * 3600000);
+        const done = state.orders.filter(o => !!o.completedAtISO);
 
-        ordersActiveChip.textContent = T.active + ": " + active.length;
-        ordersRiskChip.textContent = T.urgent + ": " + risk.length;
+        ordersTabActive.classList.toggle("active", ordersMode === "active");
+        ordersTabDone.classList.toggle("active", ordersMode === "done");
 
-        if(!state.orders.length){
-          ordersList.innerHTML = '<div class="empty">' + T.noOrders + ' <b>"' + T.addOrder + '"</b>.</div>';
+        if(ordersMode === "active") ordersActiveChip.textContent = T.active + ": " + active.length;
+        else ordersActiveChip.textContent = T.completedPlural + ": " + done.length;
+
+        const source = ordersMode === "active" ? active : done;
+        if(!source.length){
+          if(ordersMode === "active"){
+            ordersList.innerHTML = '<div class="empty">' + T.noOrders + ' <b>"' + T.addOrder + '"</b>.</div>';
+          } else {
+            ordersList.innerHTML = '<div class="empty">' + T.noCompleted + '</div>';
+          }
           return;
         }
 
-        const sorted = state.orders.slice().sort((a,b)=>{
-          const doneA = !!a.completedAtISO;
-          const doneB = !!b.completedAtISO;
-          if(doneA !== doneB) return doneA ? 1 : -1;
-
+        const sorted = source.slice().sort((a,b)=>{
           const pa = priorityRank(a.priority || "");
           const pb = priorityRank(b.priority || "");
           if(pb !== pa) return pb - pa;
+
+          if(ordersMode === "done"){
+            const ad = new Date(a.completedAtISO || 0).getTime();
+            const bd = new Date(b.completedAtISO || 0).getTime();
+            return bd - ad;
+          }
 
           return new Date(a.deadlineISO).getTime() - new Date(b.deadlineISO).getTime();
         });
@@ -1563,12 +1579,15 @@
         uiState.expanded.add(id);
         save();
         dlgOrder.close();
+        ordersMode = "active";
         setView("orders");
         renderOrders();
       });
 
       tabTracker.onclick = function(){ setView("tracker"); };
       tabOrders.onclick = function(){ setView("orders"); };
+      ordersTabActive.onclick = function(){ ordersMode = "active"; renderOrders(); };
+      ordersTabDone.onclick = function(){ ordersMode = "done"; renderOrders(); };
 
       setInterval(function(){
         if(currentView !== "orders") return;
