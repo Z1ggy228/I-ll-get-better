@@ -174,45 +174,66 @@
     .history-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
     .history-note{margin-top:6px}
     .muted{color:var(--muted)}
-
     /* orders */
-    .orders-wrap{padding:16px}
+    .orders-wrap{
+      padding:18px;
+      background:linear-gradient(180deg, rgba(10,12,11,.92), rgba(16,12,10,.92));
+      border:1px solid rgba(255,95,95,.2);
+    }
     .orders-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .orders-title{margin:0;font-size:16px}
+    .orders-title{margin:0;font-size:20px;letter-spacing:.3px;text-transform:uppercase}
     .orders-meta{display:flex;gap:8px;flex-wrap:wrap}
     .orders-meta .chip{padding:7px 10px}
-    .orders-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-    .order-item{border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);padding:12px}
-    .order-item.is-overdue{border-color:rgba(255,90,90,.45)}
-    .order-item.is-danger{border-color:rgba(255,120,120,.35)}
-    .order-item.is-warn{border-color:rgba(255,189,89,.35)}
-    .order-item.is-done{opacity:.9;border-color:rgba(110,220,150,.45)}
-    .order-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .order-title{margin:0 0 6px;font-size:15px}
+    .orders-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+
+    .order-item{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      background:linear-gradient(135deg, rgba(25,24,24,.9), rgba(24,20,20,.9));
+      padding:12px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 6px 26px rgba(0,0,0,.25);
+    }
+    .order-item.is-overdue{border-color:rgba(255,70,70,.8);box-shadow:0 0 0 1px rgba(255,70,70,.25),0 10px 24px rgba(170,0,0,.25)}
+    .order-item.is-danger{border-color:rgba(255,115,115,.65)}
+    .order-item.is-warn{border-color:rgba(255,189,89,.5)}
+    .order-item.is-done{border-color:rgba(110,220,150,.58);box-shadow:0 0 0 1px rgba(110,220,150,.2), 0 10px 24px rgba(0,90,0,.18)}
+
+    .order-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .order-title{margin:0 0 6px;font-size:19px;font-weight:900;line-height:1.2}
     .order-sub{font-size:12px;color:var(--muted)}
-    .deadline{font-weight:800}
-    .deadline.ok{color:#9ed8b6}
+
+    .deadline{font-weight:900;font-size:28px;line-height:1;text-align:right;letter-spacing:.4px}
+    .deadline.ok{color:#c8e6d5}
     .deadline.warn{color:#ffd27d}
-    .deadline.danger,.deadline.overdue{color:#ff8c8c}
-    .deadline.done{color:#88e3a8}
-    .order-bar{margin-top:10px;height:7px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);overflow:hidden}
-    .order-bar > i{display:block;height:100%;width:0;background:rgba(143,179,255,.35)}
-    .order-item.is-warn .order-bar > i{background:rgba(255,189,89,.45)}
+    .deadline.danger,.deadline.overdue{color:#ff8585;text-shadow:0 0 10px rgba(255,80,80,.34)}
+    .deadline.done{color:#84e8a6;text-shadow:0 0 10px rgba(110,220,150,.28)}
+
+    .order-bar{margin-top:12px;height:8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.08);overflow:hidden}
+    .order-bar > i{display:block;height:100%;width:0;background:rgba(255,120,120,.4)}
+    .order-item.is-warn .order-bar > i{background:rgba(255,189,89,.6)}
     .order-item.is-danger .order-bar > i,
-     .order-item.is-overdue .order-bar > i{background:rgba(255,90,90,.55)}
-    .order-item.is-done .order-bar > i{background:rgba(110,220,150,.55)}
-    .order-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
-    .subtasks{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}
-    .subtasks summary{cursor:pointer;color:var(--muted);font-size:12px;list-style:none}
-    .subtasks summary::-webkit-details-marker{display:none}
+    .order-item.is-overdue .order-bar > i{background:rgba(255,70,70,.75)}
+    .order-item.is-done .order-bar > i{background:rgba(110,220,150,.72)}
+
+    .order-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    .order-actions .toggle-btn{margin-left:auto}
+
+    .order-body{display:none}
+    .order-body.open{display:block}
+
+    .subtasks{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+    .subtasks-title{font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}
     .subtasks-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-    .subtask-item{border:1px solid var(--line);border-radius:10px;padding:8px;background:rgba(255,255,255,.02)}
+    .subtask-item{border:1px solid var(--line);border-radius:10px;padding:9px;background:rgba(255,255,255,.03)}
     .subtask-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
     .subtask-title{font-size:13px;font-weight:700;margin:0 0 3px}
     .subtask-meta{font-size:12px;color:var(--muted)}
     .subtask-actions{display:flex;gap:8px;margin-top:8px}
-    .subtask-form{display:grid;grid-template-columns:1fr 210px auto;gap:8px;margin-top:10px}
+
+    .subtask-form{display:none;grid-template-columns:1fr 210px auto;gap:8px;margin-top:10px}
+    .subtask-form.open{display:grid}
     @media (max-width:720px){.subtask-form{grid-template-columns:1fr}}
+
     input[type="datetime-local"]{background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 10px;width:100%;outline:none}
   </style>
 </head>
@@ -1037,6 +1058,7 @@
       const orderNote = document.getElementById("orderNote");
 
       let currentView = "tracker";
+      const uiState = { expanded: new Set(), showSubtaskForm: new Set() };
 
       function de(entity){
         const ta = document.createElement("textarea");
@@ -1063,7 +1085,11 @@
         completed: de("&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1086;"),
         subtasks: de("&#1055;&#1086;&#1076;&#1079;&#1072;&#1076;&#1072;&#1095;&#1080;"),
         newSubtask: de("&#1053;&#1086;&#1074;&#1072;&#1103; &#1087;&#1086;&#1076;&#1079;&#1072;&#1076;&#1072;&#1095;&#1072;"),
-        add: de("&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;")
+        add: de("&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;"),
+        expand: de("&#1056;&#1072;&#1079;&#1074;&#1077;&#1088;&#1085;&#1091;&#1090;&#1100;"),
+        collapse: de("&#1057;&#1074;&#1077;&#1088;&#1085;&#1091;&#1090;&#1100;"),
+        addSubtask: de("+ &#1055;&#1086;&#1076;&#1079;&#1072;&#1076;&#1072;&#1095;&#1072;"),
+        dn: de("&#1076;&#1085;")
       };
 
       function pad2(n){ return String(n).padStart(2, "0"); }
@@ -1090,7 +1116,7 @@
         const mins = Math.floor(left / 60000);
         left -= mins * 60000;
         const secs = Math.floor(left / 1000);
-        const body = days + " дн " + pad2(hours) + ":" + pad2(mins) + ":" + pad2(secs);
+        const body = days + " " + T.dn + " " + pad2(hours) + ":" + pad2(mins) + ":" + pad2(secs);
         return sign < 0 ? "-" + body : body;
       }
 
@@ -1126,12 +1152,13 @@
       }
 
       function renderSubtasks(order, container, nowMs){
-        const details = document.createElement("details");
-        details.className = "subtasks";
+        const wrap = document.createElement("div");
+        wrap.className = "subtasks";
 
-        const summary = document.createElement("summary");
-        summary.textContent = T.subtasks + " (" + order.subtasks.length + ")";
-        details.appendChild(summary);
+        const title = document.createElement("div");
+        title.className = "subtasks-title";
+        title.textContent = T.subtasks + " (" + order.subtasks.length + ")";
+        wrap.appendChild(title);
 
         const list = document.createElement("div");
         list.className = "subtasks-list";
@@ -1150,16 +1177,18 @@
             head.className = "subtask-head";
 
             const left = document.createElement("div");
-            const title = document.createElement("div");
-            title.className = "subtask-title";
-            title.textContent = st.title || T.untitled;
+            const stTitle = document.createElement("div");
+            stTitle.className = "subtask-title";
+            stTitle.textContent = st.title || T.untitled;
             const meta = document.createElement("div");
             meta.className = "subtask-meta";
             meta.textContent = T.deadline + ": " + fmtDateTime(st.deadlineISO);
-            left.append(title, meta);
+            left.append(stTitle, meta);
 
             const right = document.createElement("div");
             right.className = "deadline " + risk;
+            right.style.fontSize = "16px";
+            right.style.lineHeight = "1.2";
             if(st.completedAtISO){
               right.textContent = completionText(st.deadlineISO, st.completedAtISO);
             } else if(leftMs <= 0){
@@ -1198,10 +1227,10 @@
             list.appendChild(item);
           });
 
-        details.appendChild(list);
+        wrap.appendChild(list);
 
         const form = document.createElement("div");
-        form.className = "subtask-form";
+        form.className = "subtask-form" + (uiState.showSubtaskForm.has(order.id) ? " open" : "");
 
         const stTitle = document.createElement("input");
         stTitle.type = "text";
@@ -1227,13 +1256,15 @@
             createdAtISO: new Date().toISOString(),
             completedAtISO: null
           });
+          uiState.showSubtaskForm.delete(order.id);
           save();
           renderOrders();
         };
 
         form.append(stTitle, stDeadline, addBtn);
-        details.appendChild(form);
-        container.appendChild(details);
+        wrap.appendChild(form);
+
+        container.appendChild(wrap);
       }
 
       function renderOrders(){
@@ -1265,6 +1296,7 @@
           const createdMs = new Date(order.createdAtISO || Date.now()).getTime();
           const riskLevel = getRisk(order.deadlineISO, order.completedAtISO, nowMs);
           const leftMs = deadlineMs - nowMs;
+          const isExpanded = uiState.expanded.has(order.id);
 
           const totalSpan = Math.max(1, deadlineMs - createdMs);
           const elapsed = order.completedAtISO
@@ -1305,6 +1337,7 @@
 
           const abs = document.createElement("div");
           abs.className = "order-sub";
+          abs.style.textAlign = "right";
           abs.textContent = T.deadline + ": " + fmtDateTime(order.deadlineISO);
 
           right.append(dead, abs);
@@ -1318,14 +1351,6 @@
 
           box.append(top, bar);
 
-          if(order.note){
-            const note = document.createElement("div");
-            note.className = "order-sub";
-            note.style.marginTop = "8px";
-            note.textContent = order.note;
-            box.appendChild(note);
-          }
-
           const actions = document.createElement("div");
           actions.className = "order-actions";
 
@@ -1336,6 +1361,15 @@
           doneBtn.onclick = function(){
             order.completedAtISO = order.completedAtISO ? null : new Date().toISOString();
             save();
+            renderOrders();
+          };
+
+          const addSubBtn = document.createElement("button");
+          addSubBtn.type = "button";
+          addSubBtn.textContent = T.addSubtask;
+          addSubBtn.onclick = function(){
+            uiState.expanded.add(order.id);
+            uiState.showSubtaskForm.add(order.id);
             renderOrders();
           };
 
@@ -1355,15 +1389,40 @@
           delBtn.className = "danger";
           delBtn.textContent = T.del;
           delBtn.onclick = function(){
+            uiState.expanded.delete(order.id);
+            uiState.showSubtaskForm.delete(order.id);
             state.orders = state.orders.filter(x => x.id !== order.id);
             save();
             renderOrders();
           };
 
-          actions.append(doneBtn, postponeBtn, delBtn);
+          const toggleBtn = document.createElement("button");
+          toggleBtn.type = "button";
+          toggleBtn.className = "toggle-btn";
+          toggleBtn.textContent = isExpanded ? T.collapse : T.expand;
+          toggleBtn.onclick = function(){
+            if(uiState.expanded.has(order.id)) uiState.expanded.delete(order.id);
+            else uiState.expanded.add(order.id);
+            renderOrders();
+          };
+
+          actions.append(doneBtn, addSubBtn, postponeBtn, delBtn, toggleBtn);
           box.appendChild(actions);
 
-          renderSubtasks(order, box, nowMs);
+          const body = document.createElement("div");
+          body.className = "order-body" + (isExpanded ? " open" : "");
+
+          if(order.note){
+            const note = document.createElement("div");
+            note.className = "order-sub";
+            note.style.marginTop = "10px";
+            note.textContent = order.note;
+            body.appendChild(note);
+          }
+
+          renderSubtasks(order, body, nowMs);
+          box.appendChild(body);
+
           ordersList.appendChild(box);
         });
       }
@@ -1410,8 +1469,9 @@
         if(Number.isNaN(deadline.getTime())) return;
 
         ensureOrdersState();
+        const id = uid();
         state.orders.push({
-          id: uid(),
+          id,
           title,
           customer,
           deadlineISO: deadline.toISOString(),
@@ -1421,6 +1481,7 @@
           subtasks: []
         });
 
+        uiState.expanded.add(id);
         save();
         dlgOrder.close();
         setView("orders");
@@ -1442,6 +1503,7 @@
       renderOrders();
     })();
   </script>
+
 
 </body>
 </html>
