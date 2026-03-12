@@ -457,7 +457,8 @@
         <input type="text" id="orderCustomer" placeholder="@client_nick" required />
 
         <label>&#1055;&#1088;&#1080;&#1086;&#1088;&#1080;&#1090;&#1077;&#1090;</label>
-        <select id="orderPriority" required>
+        <select id="orderPriority">
+          <option value="">&#1041;&#1077;&#1079; &#1087;&#1088;&#1080;&#1086;&#1088;&#1080;&#1090;&#1077;&#1090;&#1072;</option>
           <option value="&#1054;&#1095;&#1077;&#1085;&#1100; &#1074;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;">&#1054;&#1095;&#1077;&#1085;&#1100; &#1074;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;</option>
           <option value="&#1042;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;">&#1042;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;</option>
           <option value="&#1057;&#1088;&#1077;&#1076;&#1085;&#1080;&#1081;" selected>&#1057;&#1088;&#1077;&#1076;&#1085;&#1080;&#1081;</option>
@@ -1096,6 +1097,7 @@
         pHigh: de("&#1042;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;"),
         pMedium: de("&#1057;&#1088;&#1077;&#1076;&#1085;&#1080;&#1081;"),
         pLow: de("&#1053;&#1080;&#1079;&#1082;&#1080;&#1081;"),
+        noPriority: de("&#1041;&#1077;&#1079; &#1087;&#1088;&#1080;&#1086;&#1088;&#1080;&#1090;&#1077;&#1090;&#1072;"),
         done: de("&#1043;&#1086;&#1090;&#1086;&#1074;&#1086;"),
         reopen: de("&#1042;&#1077;&#1088;&#1085;&#1091;&#1090;&#1100;"),
         del: de("&#1059;&#1076;&#1072;&#1083;&#1080;&#1090;&#1100;"),
@@ -1156,7 +1158,7 @@
         if(!Array.isArray(state.orders)) state.orders = [];
         for(const order of state.orders){
           if(!Array.isArray(order.subtasks)) order.subtasks = [];
-          if(!order.priority) order.priority = T.pMedium;
+          if(order.priority === undefined || order.priority === null) order.priority = "";
           if(!order.createdAtISO) order.createdAtISO = new Date().toISOString();
           for(const st of order.subtasks){
             if(!st.id) st.id = uid();
@@ -1307,6 +1309,14 @@
         container.appendChild(wrap);
       }
 
+      function priorityRank(value){
+        if(value === T.pVeryHigh) return 4;
+        if(value === T.pHigh) return 3;
+        if(value === T.pMedium) return 2;
+        if(value === T.pLow) return 1;
+        return 0;
+      }
+
       function renderOrders(){
         ensureOrdersState();
 
@@ -1326,6 +1336,11 @@
           const doneA = !!a.completedAtISO;
           const doneB = !!b.completedAtISO;
           if(doneA !== doneB) return doneA ? 1 : -1;
+
+          const pa = priorityRank(a.priority || "");
+          const pb = priorityRank(b.priority || "");
+          if(pb !== pa) return pb - pa;
+
           return new Date(a.deadlineISO).getTime() - new Date(b.deadlineISO).getTime();
         });
 
@@ -1361,7 +1376,7 @@
 
           const sub = document.createElement("div");
           sub.className = "order-sub";
-          sub.textContent = T.customer + ": " + (order.customer || "-") + " | " + T.priority + ": " + (order.priority || T.pMedium);
+          sub.textContent = T.customer + ": " + (order.customer || "-") + " | " + T.priority + ": " + (order.priority || T.noPriority);
           left.append(title, sub);
 
           const right = document.createElement("div");
@@ -1486,7 +1501,7 @@
       function openAddOrder(){
         orderTitle.value = "";
         orderCustomer.value = "";
-        orderPriority.value = T.pMedium;
+        orderPriority.value = "";
         orderNote.value = "";
         orderDeadline.value = toInputDateTime(new Date(Date.now() + 24 * 3600000));
         dlgOrder.showModal();
@@ -1511,7 +1526,7 @@
         const priority = orderPriority.value;
         const deadlineValue = orderDeadline.value;
         const note = (orderNote.value || "").trim();
-        if(!title || !customer || !priority || !deadlineValue) return;
+        if(!title || !customer || !deadlineValue) return;
 
         const deadline = new Date(deadlineValue);
         if(Number.isNaN(deadline.getTime())) return;
