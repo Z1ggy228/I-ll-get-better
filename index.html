@@ -208,8 +208,8 @@
 <body>
   <div class="wrap">
     <div class="tabs">
-      <button type="button" class="tabbtn active" id="tabTracker">??????</button>
-      <button type="button" class="tabbtn" id="tabOrders">??????</button>
+      <button type="button" class="tabbtn active" id="tabTracker">Tracker</button>
+      <button type="button" class="tabbtn" id="tabOrders">Orders</button>
     </div>
 
     <section class="view active" id="viewTracker">
@@ -274,14 +274,14 @@
       <div class="card orders-wrap">
         <div class="orders-head">
           <div>
-            <h2 class="orders-title">?????? ? ????????</h2>
-            <div class="muted">?????? ????????? ?? ????????? ??????? ? ???????????? ??? ???????.</div>
+            <h2 class="orders-title">Orders and Deadlines</h2>
+            <div class="muted">Timer is based on real time and keeps running outside this tab.</div>
           </div>
-          <button type="button" class="primary" id="btnAddOrder">+ ?????</button>
+          <button type="button" class="primary" id="btnAddOrder">+ Order</button>
         </div>
         <div class="orders-meta">
-          <div class="chip" id="ordersActiveChip">????????: 0</div>
-          <div class="chip" id="ordersRiskChip">???????: 0</div>
+          <div class="chip" id="ordersActiveChip">Active: 0</div>
+          <div class="chip" id="ordersRiskChip">Urgent: 0</div>
         </div>
         <div class="orders-list" id="ordersList"></div>
       </div>
@@ -402,27 +402,27 @@
   <!-- ADD ORDER -->
   <dialog id="dlgOrder">
     <div class="modal-head">
-      <h3>????? ?????</h3>
-      <button type="button" class="iconbtn" id="orderClose" aria-label="close">?</button>
+      <h3>New Order</h3>
+      <button type="button" class="iconbtn" id="orderClose" aria-label="close">X</button>
     </div>
 
     <form id="formOrder">
       <div class="modal-body">
-        <label>????????? ??????</label>
-        <input type="text" id="orderTitle" placeholder="????. ??????? / ??? / ?????? UI" required />
+        <label>Order title</label>
+        <input type="text" id="orderTitle" placeholder="Landing / Bot / UI fixes" required />
 
-        <label>??????? ?????????</label>
+        <label>Customer nickname</label>
         <input type="text" id="orderCustomer" placeholder="@client_nick" required />
 
-        <label>???????</label>
+        <label>Deadline</label>
         <input type="datetime-local" id="orderDeadline" required />
 
-        <label>??????????? (???????????)</label>
-        <input type="text" id="orderNote" placeholder="??? ????? ?? ????? ??????" />
+        <label>Comment (optional)</label>
+        <input type="text" id="orderNote" placeholder="Any important details" />
       </div>
       <div class="modal-foot">
-        <button type="button" id="orderCancel">??????</button>
-        <button class="primary" type="submit">????????</button>
+        <button type="button" id="orderCancel">Cancel</button>
+        <button class="primary" type="submit">Add</button>
       </div>
     </form>
   </dialog>
@@ -1080,11 +1080,11 @@
         const active = state.orders.filter(o => !o.completedAtISO);
         const risk = active.filter(o => (new Date(o.deadlineISO).getTime() - nowMs) <= 24 * 3600000);
 
-        ordersActiveChip.textContent = "????????: " + active.length;
-        ordersRiskChip.textContent = "???????: " + risk.length;
+        ordersActiveChip.textContent = "Active: " + active.length;
+        ordersRiskChip.textContent = "Urgent: " + risk.length;
 
         if(!state.orders.length){
-          ordersList.innerHTML = '<div class="empty">???? ??? ???????. ????? <b>"+ ?????"</b>.</div>';
+          ordersList.innerHTML = '<div class="empty">No orders yet. Click <b>"+ Order"</b>.</div>';
           return;
         }
 
@@ -1122,27 +1122,27 @@
           const left = document.createElement("div");
           const title = document.createElement("h3");
           title.className = "order-title";
-          title.textContent = order.title || "??? ????????";
+          title.textContent = order.title || "Untitled";
 
           const sub = document.createElement("div");
           sub.className = "order-sub";
-          sub.textContent = "????????: " + (order.customer || "?");
+          sub.textContent = "Customer: " + (order.customer || "-");
           left.append(title, sub);
 
           const right = document.createElement("div");
           const dead = document.createElement("div");
           dead.className = "deadline " + riskLevel;
           if(order.completedAtISO){
-            dead.textContent = "?????????";
+            dead.textContent = "Done";
           } else if(leftMs <= 0){
-            dead.textContent = "?????????: " + fmtRemaining(leftMs);
+            dead.textContent = "Overdue: " + fmtRemaining(leftMs);
           } else {
-            dead.textContent = "????????: " + fmtRemaining(leftMs);
+            dead.textContent = "Left: " + fmtRemaining(leftMs);
           }
 
           const abs = document.createElement("div");
           abs.className = "order-sub";
-          abs.textContent = "???????: " + fmtDateTime(order.deadlineISO);
+          abs.textContent = "Deadline: " + fmtDateTime(order.deadlineISO);
 
           right.append(dead, abs);
           top.append(left, right);
@@ -1169,7 +1169,7 @@
           const doneBtn = document.createElement("button");
           doneBtn.type = "button";
           doneBtn.className = "primary";
-          doneBtn.textContent = order.completedAtISO ? "???????" : "??????";
+          doneBtn.textContent = order.completedAtISO ? "Reopen" : "Done";
           doneBtn.onclick = function(){
             order.completedAtISO = order.completedAtISO ? null : new Date().toISOString();
             save();
@@ -1178,7 +1178,7 @@
 
           const postponeBtn = document.createElement("button");
           postponeBtn.type = "button";
-          postponeBtn.textContent = "+1 ????";
+          postponeBtn.textContent = "+1 day";
           postponeBtn.onclick = function(){
             const d = new Date(order.deadlineISO);
             d.setDate(d.getDate() + 1);
@@ -1190,7 +1190,7 @@
           const delBtn = document.createElement("button");
           delBtn.type = "button";
           delBtn.className = "danger";
-          delBtn.textContent = "???????";
+          delBtn.textContent = "Delete";
           delBtn.onclick = function(){
             state.orders = state.orders.filter(x => x.id !== order.id);
             save();
