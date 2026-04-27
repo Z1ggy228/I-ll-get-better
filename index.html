@@ -4,328 +4,152 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>I'll get better.</title>
-  <link rel="shortcut icon" href="./favicon.png" type="image/x-icon">
-  <style>
-    :root{
-      --bg1:#26312b;
-      --bg2:#3b2c20;
-      --text:#dbe3dd;
-      --muted:#9fb0a5;
-      --accent:#8fb3ff;
-      --line:rgba(255,255,255,.08);
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:14px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 20% 30%, rgba(143,179,255,.12), transparent 60%),
-        radial-gradient(900px 500px at 70% 20%, rgba(255,170,90,.12), transparent 60%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      min-height:100vh;
-    }
-    .wrap{max-width:1080px;margin:0 auto;padding:24px 16px 56px}
-    .tabs{display:flex;gap:8px;margin-bottom:14px}
-    .tabbtn{
-      border-radius:999px;padding:8px 14px;font-size:13px;color:var(--muted);
-      background:rgba(255,255,255,.04);
-    }
-    .tabbtn.active{color:var(--text);background:rgba(143,179,255,.18);border-color:rgba(143,179,255,.35)}
-    .view{display:none}
-    .view.active{display:block}
-    .grid{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
-    @media (max-width: 960px){.grid{grid-template-columns:1fr}}
-
-    .card{
-      background: rgba(15,18,16,.72);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      backdrop-filter: blur(10px);
-    }
-
-    /* profile header */
-    .profile{padding:18px;display:flex;gap:16px;align-items:center}
-    .avatar{
-      width:92px;height:92px;border-radius:12px;
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-      border:1px solid var(--line);
-      overflow:hidden;flex:0 0 auto;display:grid;place-items:center
-    }
-    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-    .avatar .ph{font-size:30px;color:rgba(255,255,255,.35)}
-    .p-meta{flex:1 1 auto;min-width:0}
-    .p-name{font-size:18px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 0 6px}
-    .p-sub{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:13px}
-    .flag{
-      width:18px;height:12px;border-radius:3px;border:1px solid var(--line);
-      background:linear-gradient(#d81e26 0 33%, #fff 33% 66%, #1c57a7 66% 100%);
-    }
-
-    /* activity header */
-    .activity-head{
-      padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-      border-bottom:1px solid var(--line);
-    }
-    .activity-head h2{margin:0;font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.2px}
-    .activity-total{font-size:14px;font-weight:800}
-
-    .toolbar{
-      padding:12px 16px;display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);
-    }
-    .toolbar .chip{
-      display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;
-      border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-size:12px;
-    }
-    .toolbar .spacer{flex:1 1 auto}
-
-    /* list rows */
-    .list{padding:10px 0}
-    .row{
-      padding:12px 16px;display:flex;gap:12px;align-items:center;border-top:1px solid var(--line);
-      cursor:pointer;
-    }
-    .row:first-child{border-top:none}
-    .thumb{
-      width:92px;height:52px;border-radius:10px;overflow:hidden;border:1px solid var(--line);
-      background:rgba(255,255,255,.05);flex:0 0 auto;display:grid;place-items:center;
-    }
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .thumb .ph{font-size:12px;color:rgba(255,255,255,.35)}
-    .r-main{flex:1 1 auto;min-width:0}
-    .r-title{margin:0 0 6px;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .r-sub{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
-    .r-sub b{color:var(--text)}
-    .bar{
-      margin-top:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.06);
-      border:1px solid var(--line);overflow:hidden;
-    }
-    .bar > i{display:block;height:100%;width:0%;background:rgba(143,179,255,.35)}
-    .r-actions{display:flex;gap:8px;flex:0 0 auto}
-    .iconbtn{
-      width:36px;height:36px;border-radius:12px;display:grid;place-items:center;
-      background:rgba(255,255,255,.05);border:1px solid var(--line);cursor:pointer;padding:0;text-align:center;
-    }
-    .iconbtn:hover{background:rgba(255,255,255,.09)}
-
-    .empty{
-      padding:24px 16px;
-      color:var(--muted);
-      text-align:center;
-    }
-    .empty b{color:var(--text)}
-
-    /* side */
-    .side{padding:16px}
-    .level{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-    .lvl-title{font-size:14px;color:var(--muted)}
-    .lvl-pill{
-      display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);
-      border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-weight:700;
-    }
-    .lvl-num{
-      width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
-      background:rgba(143,179,255,.18);border:1px solid rgba(143,179,255,.35);font-size:12px;
-    }
-    .btns{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-    button{
-      cursor:pointer;color:var(--text);background:rgba(255,255,255,.06);
-      border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-weight:600;text-align:left;
-    }
-    button:hover{background:rgba(255,255,255,.09)}
-    button.primary{background:rgba(143,179,255,.18);border-color:rgba(143,179,255,.35)}
-    button.danger{background:rgba(255,90,90,.12);border-color:rgba(255,90,90,.35)}
-    .hint{
-      color:var(--muted);font-size:12px;line-height:1.35;border-top:1px solid var(--line);
-      padding-top:12px;margin-top:12px;
-    }
-    .mini{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
-    .mini button{flex:1 1 auto;text-align:center}
-
-    /* dialogs */
-    dialog{
-      border:none;border-radius:16px;padding:0;max-width:560px;width:calc(100% - 24px);
-      background: rgba(15,18,16,.92);color:var(--text);border:1px solid var(--line);box-shadow: var(--shadow);
-    }
-    dialog::backdrop{background:rgba(0,0,0,.5)}
-    .modal-head{
-      padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
-      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-    }
-    .modal-head h3{margin:0;font-size:14px}
-    .modal-body{padding:14px 16px}
-    .modal-foot{padding:14px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}
-    label{font-size:12px;color:var(--muted);display:block;margin:10px 0 6px}
-    select, input[type="date"], input[type="number"], input[type="text"]{
-      background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--text);border-radius:10px;
-      padding:10px 10px;width:100%;outline:none;
-    }
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:520px){.two{grid-template-columns:1fr}}
-    .filehint{font-size:12px;color:var(--muted);margin-top:6px}
-
-    /* history list */
-    .history-item{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
-    .history-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
-    .history-note{margin-top:6px}
-    .muted{color:var(--muted)}
-    /* orders */
-    .orders-wrap{
-      padding:18px;
-      background:linear-gradient(180deg, rgba(10,12,11,.92), rgba(16,12,10,.92));
-      border:1px solid rgba(255,95,95,.2);
-    }
-    .orders-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}
-    .orders-title{margin:0;font-size:20px;letter-spacing:.3px}
-    .orders-meta{display:flex;gap:8px;flex-wrap:wrap}
-    .orders-meta .chip{
-      padding:7px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.08);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
-    }
-    .orders-filter-btn{cursor:pointer;color:var(--muted)}
-    .orders-filter-btn.active{color:var(--text);border-color:rgba(255,110,110,.55);background:rgba(255,110,110,.2)}
-    .orders-list{display:flex;flex-direction:column;gap:12px;margin-top:12px}
-
-    .order-item{
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      background:linear-gradient(135deg, rgba(25,24,24,.9), rgba(24,20,20,.9));
-      padding:12px;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 6px 26px rgba(0,0,0,.25);
-    }
-    .order-item.is-overdue{border-color:rgba(255,70,70,.8);box-shadow:0 0 0 1px rgba(255,70,70,.25),0 10px 24px rgba(170,0,0,.25)}
-    .order-item.is-danger{border-color:rgba(255,115,115,.65)}
-    .order-item.is-warn{border-color:rgba(255,189,89,.5)}
-    .order-item.is-done{border-color:rgba(110,220,150,.58);box-shadow:0 0 0 1px rgba(110,220,150,.2), 0 10px 24px rgba(0,90,0,.18)}
-
-    .order-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-    .order-title{margin:0 0 6px;font-size:19px;font-weight:900;line-height:1.2}
-    .order-sub{font-size:12px;color:var(--muted)}
-    .order-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .order-pill{
-      display:inline-flex;align-items:center;
-      padding:4px 10px;border-radius:999px;
-      font-size:12px;font-weight:700;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);color:var(--text)
-    }
-    .order-pill.price{
-      color:#84e8a6;border-color:rgba(110,220,150,.4);background:rgba(110,220,150,.12)
-    }
-    .order-progress-meta{
-      margin-top:10px;display:flex;justify-content:space-between;gap:10px;
-      font-size:12px;color:var(--muted)
-    }
-
-    .deadline{font-weight:900;font-size:28px;line-height:1;text-align:right;letter-spacing:.4px}
-    .deadline.ok{color:#c8e6d5}
-    .deadline.warn{color:#ffd27d}
-    .deadline.danger,.deadline.overdue{color:#ff8585;text-shadow:0 0 10px rgba(255,80,80,.34)}
-    .deadline.done{color:#84e8a6;text-shadow:0 0 10px rgba(110,220,150,.28)}
-
-    .order-bar{
-      margin-top:12px;height:8px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(255,255,255,.08);overflow:hidden
-    }
-    .order-bar > i{display:block;height:100%;width:0;background:rgba(143,179,255,.55)}
-    .order-item.is-warn .order-bar > i{background:rgba(255,189,89,.6)}
-    .order-item.is-danger .order-bar > i,
-    .order-item.is-overdue .order-bar > i{background:rgba(255,70,70,.75)}
-    .order-item.is-done .order-bar > i{background:rgba(110,220,150,.72)}
-
-    .order-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
-    .order-actions .toggle-btn{margin-left:auto}
-
-    .order-body{display:none}
-    .order-body.open{display:block}
-
-    .subtasks{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
-    .subtasks-title{font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}
-    .subtasks-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-    .subtask-item{border:1px solid var(--line);border-radius:10px;padding:9px;background:rgba(255,255,255,.03)}
-    .subtask-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .subtask-title{font-size:13px;font-weight:700;margin:0 0 3px}
-    .subtask-meta{font-size:12px;color:var(--muted)}
-    .subtask-actions{display:flex;gap:8px;margin-top:8px}
-
-    .subtask-form{display:none;grid-template-columns:1fr 210px auto;gap:8px;margin-top:10px}
-    .subtask-form.open{display:grid}
-    @media (max-width:720px){.subtask-form{grid-template-columns:1fr}}
-
-    input[type="datetime-local"]{background:rgba(0,0,0,.22);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 10px;width:100%;outline:none}
-  </style>
+  <link rel="shortcut icon" href="./img/favicon.png" type="image/x-icon">
+  <link rel="stylesheet" href="./css/theme.css" />
 </head>
 
 <body>
   <div class="wrap">
+    <header class="shell-hero card">
+      <div class="hero-copy">
+        <span class="eyebrow">Не до стим</span>
+        <h1 class="hero-title">Темный workspace для трекера, отчетов и заказов</h1>
+        <p class="hero-text">
+          Премиальная оболочка для ежедневного ритма: категории, часы, история активности и рабочие дедлайны собраны в одном интерфейсе без визуального шума.
+        </p>
+      </div>
+      <div class="hero-pills">
+        <span class="hero-pill">Локальное хранение</span>
+        <span class="hero-pill">Готово к расширению</span>
+        <span class="hero-pill accent">Tracker · Orders</span>
+      </div>
+    </header>
+
     <div class="tabs">
-      <button type="button" class="tabbtn active" id="tabTracker">&#1058;&#1088;&#1077;&#1082;&#1077;&#1088;</button>
-      <button type="button" class="tabbtn" id="tabOrders">&#1047;&#1072;&#1082;&#1072;&#1079;&#1099;</button>
+      <button type="button" class="tabbtn active" id="tabTracker">Трекер</button>
+      <button type="button" class="tabbtn" id="tabOrders">Заказы</button>
     </div>
 
     <section class="view active" id="viewTracker">
       <div class="grid">
-      <div class="card">
-        <div class="profile">
-          <div class="avatar" id="avatarBox"><span class="ph">👤</span></div>
-          <div class="p-meta">
-            <p class="p-name" id="profileName">Ziggy</p>
-            <div class="p-sub">
-              <span class="flag" title="Thailand"></span>
-              <span id="profileCountry">Thailand</span>
+        <div class="card tracker-main-card">
+          <div class="profile">
+            <div class="avatar" id="avatarBox"><span class="ph">👤</span></div>
+            <div class="p-meta">
+              <p class="p-name" id="profileName">Ziggy</p>
+              <div class="p-sub">
+                <span class="flag" title="Thailand"></span>
+                <span id="profileCountry">Thailand</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tracker-hero">
+            <div class="tracker-copy">
+              <span class="eyebrow">Трекер навыков</span>
+              <h2>Ежедневный рабочий ритм без визуального шума</h2>
+              <p>
+                Верхний блок показывает свежую динамику, общий объем и состояние трекера, а карточки ниже помогают быстро открывать историю и добавлять новые отчеты по каждой категории.
+              </p>
+            </div>
+
+            <div class="hero-stats">
+              <div class="stat-card accent">
+                <span class="stat-label">Последние 7 дней</span>
+                <strong class="stat-value" id="statSevenDays">0 ч.</strong>
+                <span class="stat-meta" id="statSevenDaysMeta">0 записей за неделю</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Последние 14 дней</span>
+                <strong class="stat-value" id="twoWeeksTotal">0 ч.</strong>
+                <span class="stat-meta" id="statTwoWeeksMeta">0 записей за 14 дней</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-label">Все время</span>
+                <strong class="stat-value" id="statAllTime">0 ч.</strong>
+                <span class="stat-meta" id="statAllTimeMeta">0 категорий · 0 отчетов</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="activity-head">
+            <div>
+              <span class="eyebrow">Трекер</span>
+              <h2>Карточки фокуса</h2>
+            </div>
+            <div class="activity-total">Сортировка по последним 14 дням</div>
+          </div>
+
+          <div class="toolbar">
+            <div class="chip" id="chipAll">Всего: 0 ч.</div>
+            <div class="chip" id="chipBest">Фокус: —</div>
+            <div class="chip" id="chipCategories">Категорий: 0</div>
+            <div class="chip" id="chipEntries">Отчетов: 0</div>
+          </div>
+
+          <div class="list" id="list"></div>
+        </div>
+
+        <div class="card side tracker-side-card">
+          <div class="panel-block">
+            <div class="panel-heading">
+              <span class="eyebrow">Динамика</span>
+              <h2>Последние 14 дней</h2>
+              <p>Ежедневный срез по времени, чтобы видеть пики, провалы и общий темп без переключения между экранами.</p>
+            </div>
+
+            <div class="recent-chart" id="recentChart"></div>
+
+            <div class="insight-list">
+              <div class="insight-item">
+                <div class="insight-copy">
+                  <span class="insight-title">Лучший день</span>
+                  <span class="insight-sub" id="bestDayLabel">Пока без отчетов</span>
+                </div>
+                <div class="insight-value" id="bestDayValue">0 ч.</div>
+              </div>
+              <div class="insight-item">
+                <div class="insight-copy">
+                  <span class="insight-title">Фокус-категория</span>
+                  <span class="insight-sub" id="bestCategoryLabel">Нет данных</span>
+                </div>
+                <div class="insight-value" id="bestCategoryValue">—</div>
+              </div>
+              <div class="insight-item">
+                <div class="insight-copy">
+                  <span class="insight-title">Отчеты за 14 дней</span>
+                  <span class="insight-sub" id="recentEntriesLabel">Свежая активность</span>
+                </div>
+                <div class="insight-value" id="recentEntriesValue">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="level">
+            <div class="lvl-title">Уровень</div>
+            <div class="lvl-pill">
+              <span class="lvl-num" id="lvlNum">1</span>
+              <span class="muted" id="lvlText">XP: 0</span>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="primary" id="btnAddHours">+ Добавить отчет</button>
+            <button id="btnAddCategory">+ Новая категория</button>
+            <button id="btnManage">Редактировать категории</button>
+            <button id="btnProfile">Профиль и аватар</button>
+          </div>
+
+          <div class="hint">
+            <div class="mini">
+              <button id="btnExport">Экспорт JSON</button>
+              <button id="btnImport">Импорт JSON</button>
+            </div>
+            <div class="mini">
+              <span>Каждый день прокрастинации — это не «потерянное время», а день, который отодвигает момент, когда ты сидишь на Пхукете🌴</span>
             </div>
           </div>
         </div>
-
-        <div class="activity-head">
-          <h2>Недавняя активность</h2>
-          <div class="activity-total" id="twoWeeksTotal">0 ч. за последние 2 недели</div>
-        </div>
-
-        <div class="toolbar">
-          <!-- <div class="chip">Диапазон: последние 14 дней</div> -->
-          <div class="chip" id="chipAll">Всего: 0 ч.</div>
-          <div class="spacer"></div>
-          <!-- <div class="chip">Сортировка: 2 недели</div> -->
-        </div>
-
-        <div class="list" id="list"></div>
-      </div>
-
-      <div class="card side">
-        <div class="level">
-          <div class="lvl-title">Уровень</div>
-          <div class="lvl-pill">
-            <span class="lvl-num" id="lvlNum">1</span>
-            <span class="muted" id="lvlText">XP: 0</span>
-          </div>
-        </div>
-
-        <div class="btns">
-          <button class="primary" id="btnAddHours">+ Часы</button>
-          <button id="btnAddCategory">+ Категория</button>
-          <button id="btnManage">Управление категориями</button>
-          <button id="btnProfile">Редактировать профиль</button>
-        </div>
-
-        <div class="hint">
-          <div class="mini">
-            <button id="btnExport">Экспорт JSON</button>
-            <button id="btnImport">Импорт JSON</button>
-          </div>
-          <div class="mini">
-            <span>Каждый день прокрастинации — это не «потерянное время», а день, который отодвигает момент, когда ты сидишь на Пхукете🌴</span>
-          </div>
-        </div>
-      </div>
       </div>
     </section>
 
@@ -333,15 +157,40 @@
       <div class="card orders-wrap">
         <div class="orders-head">
           <div>
-            <h2 class="orders-title">&#1047;&#1072;&#1082;&#1072;&#1079;&#1099; &#1080; &#1076;&#1077;&#1076;&#1083;&#1072;&#1081;&#1085;&#1099;</h2>
-            <div class="muted">&#1058;&#1072;&#1081;&#1084;&#1077;&#1088; &#1080;&#1076;&#1077;&#1090; &#1087;&#1086; &#1088;&#1077;&#1072;&#1083;&#1100;&#1085;&#1086;&#1084;&#1091; &#1074;&#1088;&#1077;&#1084;&#1077;&#1085;&#1080; &#1080; &#1085;&#1077; &#1079;&#1072;&#1074;&#1080;&#1089;&#1080;&#1090; &#1086;&#1090; &#1086;&#1090;&#1082;&#1088;&#1099;&#1090;&#1086;&#1081; &#1074;&#1082;&#1083;&#1072;&#1076;&#1082;&#1080;.</div>
+            <span class="eyebrow">Заказы</span>
+            <h2 class="orders-title">Дедлайны и клиентские задачи</h2>
+            <div class="orders-spotlight" id="ordersSpotlight">Таймер идет по реальному времени и не зависит от открытой вкладки.</div>
           </div>
-          <button type="button" class="primary" id="btnAddOrder">+ &#1047;&#1072;&#1082;&#1072;&#1079;</button>
+          <button type="button" class="primary" id="btnAddOrder">+ Новый заказ</button>
         </div>
+
+        <div class="orders-summary">
+          <div class="stat-card accent">
+            <span class="stat-label">В работе</span>
+            <strong class="stat-value" id="ordersStatActive">0</strong>
+            <span class="stat-meta">Активные дедлайны</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Срочно</span>
+            <strong class="stat-value" id="ordersStatUrgent">0</strong>
+            <span class="stat-meta">Осталось меньше суток</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Просрочено</span>
+            <strong class="stat-value" id="ordersStatOverdue">0</strong>
+            <span class="stat-meta">Требуют внимания</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Закрыто</span>
+            <strong class="stat-value" id="ordersStatDone">0</strong>
+            <span class="stat-meta">Выполненные заказы</span>
+          </div>
+        </div>
+
         <div class="orders-meta">
-          <div class="chip" id="ordersActiveChip">&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1093;: 0</div>
-          <button type="button" class="chip orders-filter-btn active" id="ordersTabActive">&#1040;&#1082;&#1090;&#1080;&#1074;&#1085;&#1099;&#1077; &#1076;&#1077;&#1076;&#1083;&#1072;&#1081;&#1085;&#1099;</button>
-          <button type="button" class="chip orders-filter-btn" id="ordersTabDone">&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1085;&#1099;&#1077;</button>
+          <div class="chip" id="ordersActiveChip">Активных: 0</div>
+          <button type="button" class="chip orders-filter-btn active" id="ordersTabActive">Активные дедлайны</button>
+          <button type="button" class="chip orders-filter-btn" id="ordersTabDone">Выполненные</button>
         </div>
         <div class="orders-list" id="ordersList"></div>
       </div>
@@ -462,39 +311,39 @@
   <!-- ADD ORDER -->
   <dialog id="dlgOrder">
     <div class="modal-head">
-      <h3>&#1053;&#1086;&#1074;&#1099;&#1081; &#1079;&#1072;&#1082;&#1072;&#1079;</h3>
-      <button type="button" class="iconbtn" id="orderClose" aria-label="close">X</button>
+      <h3>Новый заказ</h3>
+      <button type="button" class="iconbtn" id="orderClose" aria-label="close">✕</button>
     </div>
 
     <form id="formOrder">
       <div class="modal-body">
-        <label>&#1047;&#1072;&#1075;&#1086;&#1083;&#1086;&#1074;&#1086;&#1082; &#1079;&#1072;&#1082;&#1072;&#1079;&#1072;</label>
-        <input type="text" id="orderTitle" placeholder="&#1042;&#1077;&#1088;&#1089;&#1090;&#1082;&#1072; / &#1041;&#1086;&#1090; / UI &#1087;&#1088;&#1072;&#1074;&#1082;&#1080;" required />
+        <label>Заголовок заказа</label>
+        <input type="text" id="orderTitle" placeholder="Верстка / Бот / UI правки" required />
 
-        <label>&#1053;&#1080;&#1082;&#1085;&#1077;&#1081;&#1084; &#1079;&#1072;&#1082;&#1072;&#1079;&#1095;&#1080;&#1082;&#1072;</label>
+        <label>Никнейм заказчика</label>
         <input type="text" id="orderCustomer" placeholder="@client_nick" required />
 
-        <label>&#1055;&#1088;&#1080;&#1086;&#1088;&#1080;&#1090;&#1077;&#1090;</label>
+        <label>Приоритет</label>
         <select id="orderPriority">
-          <option value="">&#1041;&#1077;&#1079; &#1087;&#1088;&#1080;&#1086;&#1088;&#1080;&#1090;&#1077;&#1090;&#1072;</option>
-          <option value="&#1054;&#1095;&#1077;&#1085;&#1100; &#1074;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;">&#1054;&#1095;&#1077;&#1085;&#1100; &#1074;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;</option>
-          <option value="&#1042;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;">&#1042;&#1099;&#1089;&#1086;&#1082;&#1080;&#1081;</option>
-          <option value="&#1057;&#1088;&#1077;&#1076;&#1085;&#1080;&#1081;" selected>&#1057;&#1088;&#1077;&#1076;&#1085;&#1080;&#1081;</option>
-          <option value="&#1053;&#1080;&#1079;&#1082;&#1080;&#1081;">&#1053;&#1080;&#1079;&#1082;&#1080;&#1081;</option>
+          <option value="">Без приоритета</option>
+          <option value="Очень высокий">Очень высокий</option>
+          <option value="Высокий">Высокий</option>
+          <option value="Средний" selected>Средний</option>
+          <option value="Низкий">Низкий</option>
         </select>
 
-        <label>&#1044;&#1077;&#1076;&#1083;&#1072;&#1081;&#1085;</label>
+        <label>Дедлайн</label>
         <input type="datetime-local" id="orderDeadline" required />
 
-        <label>&#1057;&#1090;&#1086;&#1080;&#1084;&#1086;&#1089;&#1090;&#1100; &#1079;&#1072;&#1082;&#1072;&#1079;&#1072;</label>
-        <input type="text" id="orderPrice" placeholder="40.000 &#1088;&#1091;&#1073;" />
+        <label>Стоимость заказа</label>
+        <input type="text" id="orderPrice" placeholder="40.000 руб" />
 
-        <label>&#1050;&#1086;&#1084;&#1084;&#1077;&#1085;&#1090;&#1072;&#1088;&#1080;&#1081; (&#1086;&#1087;&#1094;&#1080;&#1086;&#1085;&#1072;&#1083;&#1100;&#1085;&#1086;)</label>
-        <input type="text" id="orderNote" placeholder="&#1051;&#1102;&#1073;&#1099;&#1077; &#1074;&#1072;&#1078;&#1085;&#1099;&#1077; &#1076;&#1077;&#1090;&#1072;&#1083;&#1080;" />
+        <label>Комментарий (опционально)</label>
+        <input type="text" id="orderNote" placeholder="Любые важные детали" />
       </div>
       <div class="modal-foot">
-        <button type="button" id="orderCancel">&#1054;&#1090;&#1084;&#1077;&#1085;&#1072;</button>
-        <button class="primary" type="submit">&#1044;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;</button>
+        <button type="button" id="orderCancel">Отмена</button>
+        <button class="primary" type="submit">Добавить</button>
       </div>
     </form>
   </dialog>
@@ -522,16 +371,61 @@
       const rounded = Math.round(h * 10) / 10;
       return `${rounded}`.replace(".", ",");
     };
+    const pluralize = (count, one, few, many) => {
+      const mod10 = count % 10;
+      const mod100 = count % 100;
+      if(mod10 === 1 && mod100 !== 11) return one;
+      if(mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+      return many;
+    };
 
-    function startOfRange14() {
+    function startOfRangeDays(days) {
       const d = new Date();
       d.setHours(0,0,0,0);
-      d.setDate(d.getDate() - 13);
+      d.setDate(d.getDate() - (days - 1));
       return d;
     }
-    function inLast14Days(dateISO) {
+    function inLastDays(dateISO, days) {
       const d = new Date(dateISO + "T00:00:00");
-      return d >= startOfRange14();
+      return d >= startOfRangeDays(days);
+    }
+    function startOfRange14() {
+      return startOfRangeDays(14);
+    }
+    function inLast14Days(dateISO) {
+      return inLastDays(dateISO, 14);
+    }
+    function totalLastDays(days){
+      return state.entries.filter(e => inLastDays(e.dateISO, days)).reduce((s,e)=>s+e.minutes,0);
+    }
+    function entryCountLastDays(days){
+      return state.entries.filter(e => inLastDays(e.dateISO, days)).length;
+    }
+    function recentDailyTotals(days){
+      const start = startOfRangeDays(days);
+      const map = new Map();
+      for(let i = 0; i < days; i += 1){
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+        const iso = `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+        map.set(iso, { dateISO: iso, total: 0, entries: 0 });
+      }
+      for(const e of state.entries){
+        const rec = map.get(e.dateISO);
+        if(!rec) continue;
+        rec.total += e.minutes;
+        rec.entries += 1;
+      }
+      return Array.from(map.values());
+    }
+    function formatShortDate(dateISO){
+      if(!dateISO) return "—";
+      const [year, month, day] = dateISO.split("-");
+      return `${day}.${month}.${year}`;
+    }
+    function formatDayLabel(dateISO){
+      const d = new Date(dateISO + "T00:00:00");
+      return d.toLocaleDateString("ru-RU", { weekday:"short" }).replace(".", "");
     }
 
     // ====== image helpers
@@ -643,13 +537,28 @@
 
     // ====== refs
     const listEl = document.getElementById("list");
+    const statSevenDaysEl = document.getElementById("statSevenDays");
+    const statSevenDaysMetaEl = document.getElementById("statSevenDaysMeta");
     const twoWeeksTotalEl = document.getElementById("twoWeeksTotal");
+    const statTwoWeeksMetaEl = document.getElementById("statTwoWeeksMeta");
+    const statAllTimeEl = document.getElementById("statAllTime");
+    const statAllTimeMetaEl = document.getElementById("statAllTimeMeta");
     const chipAllEl = document.getElementById("chipAll");
+    const chipBestEl = document.getElementById("chipBest");
+    const chipCategoriesEl = document.getElementById("chipCategories");
+    const chipEntriesEl = document.getElementById("chipEntries");
     const lvlNumEl = document.getElementById("lvlNum");
     const lvlTextEl = document.getElementById("lvlText");
     const profileNameEl = document.getElementById("profileName");
     const profileCountryEl = document.getElementById("profileCountry");
     const avatarBox = document.getElementById("avatarBox");
+    const recentChartEl = document.getElementById("recentChart");
+    const bestDayValueEl = document.getElementById("bestDayValue");
+    const bestDayLabelEl = document.getElementById("bestDayLabel");
+    const bestCategoryValueEl = document.getElementById("bestCategoryValue");
+    const bestCategoryLabelEl = document.getElementById("bestCategoryLabel");
+    const recentEntriesValueEl = document.getElementById("recentEntriesValue");
+    const recentEntriesLabelEl = document.getElementById("recentEntriesLabel");
 
     const dlgHours = document.getElementById("dlgHours");
     const dlgCat = document.getElementById("dlgCat");
@@ -679,19 +588,21 @@
     function totalsByCategory(){
       const byCat = new Map();
       for(const c of state.categories){
-        byCat.set(c.id, { total:0, last14:0, lastDate:"" });
+        byCat.set(c.id, { total:0, last7:0, last14:0, lastDate:"", entries:0 });
       }
       for(const e of state.entries){
         const rec = byCat.get(e.categoryId);
         if(!rec) continue;
         rec.total += e.minutes;
+        if(inLastDays(e.dateISO, 7)) rec.last7 += e.minutes;
         if(inLast14Days(e.dateISO)) rec.last14 += e.minutes;
+        rec.entries += 1;
         if(!rec.lastDate || e.dateISO > rec.lastDate) rec.lastDate = e.dateISO;
       }
       return byCat;
     }
     function totalAll(){ return state.entries.reduce((s,e)=>s+e.minutes,0); }
-    function totalLast14(){ return state.entries.filter(e=>inLast14Days(e.dateISO)).reduce((s,e)=>s+e.minutes,0); }
+    function totalLast14(){ return totalLastDays(14); }
 
     // XP/Level: 1 минута = 1 XP
     function xpTotal(){ return totalAll(); }
@@ -714,11 +625,84 @@
       }
     }
 
+    function renderTrendChart(days){
+      recentChartEl.innerHTML = "";
+      const maxTotal = Math.max(1, ...days.map(day => day.total));
+      days.forEach(day => {
+        const col = document.createElement("div");
+        col.className = "trend-col";
+        col.title = `${formatShortDate(day.dateISO)} • ${fmtHours(day.total)} ч.`;
+
+        const value = document.createElement("div");
+        value.className = "trend-value";
+        value.textContent = day.total ? `${fmtHours(day.total)}ч` : "0";
+
+        const barWrap = document.createElement("div");
+        barWrap.className = "trend-bar-wrap";
+
+        const bar = document.createElement("div");
+        bar.className = "trend-bar";
+        bar.style.setProperty("--bar-h", `${Math.max(10, Math.round((day.total / maxTotal) * 118))}px`);
+        if(!day.total) bar.style.opacity = "0.26";
+        barWrap.appendChild(bar);
+
+        const label = document.createElement("div");
+        label.className = "trend-label";
+        label.textContent = formatDayLabel(day.dateISO).slice(0, 2);
+
+        col.append(value, barWrap, label);
+        recentChartEl.appendChild(col);
+      });
+    }
+
     function renderStats(){
+      const byCat = totalsByCategory();
+      const last7 = totalLastDays(7);
       const last14 = totalLast14();
       const all = totalAll();
-      twoWeeksTotalEl.textContent = `${fmtHours(last14)} ч. за последние 2 недели`;
+      const entries7 = entryCountLastDays(7);
+      const entries14 = entryCountLastDays(14);
+      const daily14 = recentDailyTotals(14);
+      const categoryCountText = `${state.categories.length} ${pluralize(state.categories.length, "категория", "категории", "категорий")}`;
+      const entryCountText = `${state.entries.length} ${pluralize(state.entries.length, "отчет", "отчета", "отчетов")}`;
+      const bestDay = daily14.reduce((best, day) => day.total > best.total ? day : best, { dateISO:"", total:0, entries:0 });
+      const topCategory = state.categories
+        .map(category => ({ category, stats: byCat.get(category.id) || { total:0, last7:0, last14:0, entries:0 } }))
+        .sort((a,b) => {
+          if((b.stats.last14 || 0) !== (a.stats.last14 || 0)) return (b.stats.last14 || 0) - (a.stats.last14 || 0);
+          return (b.stats.total || 0) - (a.stats.total || 0);
+        })[0] || null;
+
+      statSevenDaysEl.textContent = `${fmtHours(last7)} ч.`;
+      statSevenDaysMetaEl.textContent = entries7 ? `${entries7} ${pluralize(entries7, "запись", "записи", "записей")} за неделю` : "Пока без отчетов";
+      twoWeeksTotalEl.textContent = `${fmtHours(last14)} ч.`;
+      statTwoWeeksMetaEl.textContent = entries14 ? `${entries14} ${pluralize(entries14, "запись", "записи", "записей")} за 14 дней` : "Пока без отчетов";
+      statAllTimeEl.textContent = `${fmtHours(all)} ч.`;
+      statAllTimeMetaEl.textContent = `${categoryCountText} · ${entryCountText}`;
       chipAllEl.textContent = `Всего: ${fmtHours(all)} ч.`;
+      chipBestEl.textContent = `Фокус: ${topCategory ? topCategory.category.title : "—"}`;
+      chipCategoriesEl.textContent = `Категорий: ${state.categories.length}`;
+      chipEntriesEl.textContent = `Отчетов: ${state.entries.length}`;
+
+      if(bestDay.total > 0){
+        bestDayValueEl.textContent = `${fmtHours(bestDay.total)} ч.`;
+        bestDayLabelEl.textContent = `${formatShortDate(bestDay.dateISO)} · ${bestDay.entries} ${pluralize(bestDay.entries, "запись", "записи", "записей")}`;
+      } else {
+        bestDayValueEl.textContent = "0 ч.";
+        bestDayLabelEl.textContent = "Пока без отчетов";
+      }
+
+      if(topCategory && (topCategory.stats.last14 > 0 || topCategory.stats.total > 0)){
+        bestCategoryValueEl.textContent = topCategory.category.title;
+        bestCategoryLabelEl.textContent = `${fmtHours(topCategory.stats.last14 || topCategory.stats.total)} ч. в фокусе`;
+      } else {
+        bestCategoryValueEl.textContent = "—";
+        bestCategoryLabelEl.textContent = "Нет данных";
+      }
+
+      recentEntriesValueEl.textContent = String(entries14);
+      recentEntriesLabelEl.textContent = entries14 ? `${fmtHours(last14)} ч. за 14 дней` : "Свежая активность";
+      renderTrendChart(daily14);
 
       const xp = xpTotal();
       const lvl = levelFromXP(xp);
@@ -742,7 +726,7 @@
       if(!state.categories.length){
         listEl.innerHTML = `
           <div class="empty">
-            Категорий пока нет. Нажми <b>“+ Категория”</b> и добавь свои: English, JS, Работа, Спортзал и т.д.
+            Категорий пока нет. Нажми <b>“+ Новая категория”</b> и добавь свои: English, JS, Работа, Спортзал и т.д.
           </div>
         `;
         return;
@@ -760,8 +744,8 @@
       const maxLast14 = Math.max(1, ...state.categories.map(x => (byCat.get(x.id)?.last14 || 0)));
 
       listEl.innerHTML = "";
-      for(const c of cats){
-        const t = byCat.get(c.id) || { total:0, last14:0, lastDate:"" };
+      cats.forEach((c, index) => {
+        const t = byCat.get(c.id) || { total:0, last7:0, last14:0, lastDate:"", entries:0 };
 
         const row = document.createElement("div");
         row.className = "row";
@@ -780,35 +764,75 @@
         }else{
           const ph = document.createElement("div");
           ph.className = "ph";
-          ph.textContent = "NO IMAGE";
+          ph.textContent = (c.title || "?").trim().slice(0, 2).toUpperCase();
           thumb.appendChild(ph);
         }
 
         const main = document.createElement("div");
         main.className = "r-main";
 
+        const top = document.createElement("div");
+        top.className = "r-top";
+
         const title = document.createElement("p");
         title.className = "r-title";
         title.textContent = c.title;
 
+        const badges = document.createElement("div");
+        badges.className = "r-badges";
+
+        const rankBadge = document.createElement("span");
+        rankBadge.className = "inline-chip accent";
+        rankBadge.textContent = `#${index + 1}`;
+
+        const freshBadge = document.createElement("span");
+        freshBadge.className = "inline-chip";
+        freshBadge.textContent = t.lastDate ? `Обновлено ${formatShortDate(t.lastDate)}` : "Новая категория";
+
+        badges.append(rankBadge, freshBadge);
+        top.append(title, badges);
+
+        const metrics = document.createElement("div");
+        metrics.className = "r-kpis";
+
+        [
+          { label: "Все время", value: `${fmtHours(t.total)} ч.` },
+          { label: "14 дней", value: `${fmtHours(t.last14)} ч.` },
+          { label: "7 дней", value: `${fmtHours(t.last7)} ч.` }
+        ].forEach(item => {
+          const box = document.createElement("div");
+          box.className = "metric";
+
+          const label = document.createElement("span");
+          label.className = "metric-label";
+          label.textContent = item.label;
+
+          const value = document.createElement("span");
+          value.className = "metric-value";
+          value.textContent = item.value;
+
+          box.append(label, value);
+          metrics.appendChild(box);
+        });
+
         const sub = document.createElement("div");
         sub.className = "r-sub";
         const s1 = document.createElement("span");
-        s1.innerHTML = `<b>${fmtHours(t.total)}</b> ч. всего`;
+        s1.innerHTML = `отчетов: <b>${t.entries}</b>`;
         const s2 = document.createElement("span");
-        s2.innerHTML = `<b>${fmtHours(t.last14)}</b> ч. за 2 недели`;
+        s2.innerHTML = `последнее: <b>${t.lastDate ? formatShortDate(t.lastDate) : "—"}</b>`;
         const s3 = document.createElement("span");
-        s3.innerHTML = `последнее: <b>${t.lastDate ? t.lastDate.split("-").reverse().join(".") : "—"}</b>`;
+        const pct = Math.min(100, Math.round((t.last14 / maxLast14) * 100));
+        s3.innerHTML = `фокус 14 дней: <b>${pct}%</b>`;
         sub.append(s1,s2,s3);
 
         const bar = document.createElement("div");
         bar.className = "bar";
         const fill = document.createElement("i");
-        const pct = Math.min(100, Math.round((t.last14 / maxLast14) * 100));
         fill.style.width = pct + "%";
         bar.appendChild(fill);
 
-        main.append(title, sub, bar);
+        main.append(top, metrics, bar, sub);
 
         const actions = document.createElement("div");
         actions.className = "r-actions";
@@ -816,7 +840,7 @@
         const addBtn = document.createElement("button");
         addBtn.type = "button";
         addBtn.className = "iconbtn";
-        addBtn.title = "Добавить часы в эту категорию";
+        addBtn.title = "Добавить отчет в эту категорию";
         addBtn.textContent = "+";
         addBtn.onclick = () => openAddHours(c.id);
 
@@ -824,7 +848,7 @@
 
         row.append(thumb, main, actions);
         listEl.appendChild(row);
-      }
+      });
     }
 
     function renderAll(){
@@ -867,13 +891,10 @@
 
       for(const c of state.categories){
         const box = document.createElement("div");
-        box.style.padding = "10px 0";
-        box.style.borderBottom = "1px solid rgba(255,255,255,.08)";
+        box.className = "manage-item";
 
         const row = document.createElement("div");
-        row.style.display="flex";
-        row.style.gap="10px";
-        row.style.alignItems="center";
+        row.className = "manage-row";
 
         const input = document.createElement("input");
         input.type = "text";
@@ -896,8 +917,7 @@
 
         const t = byCat.get(c.id) || { total:0, last14:0 };
         const stats = document.createElement("div");
-        stats.className = "muted";
-        stats.style.marginTop="8px";
+        stats.className = "muted manage-stats";
         stats.textContent = `Всего: ${fmtHours(t.total)} ч • 2 недели: ${fmtHours(t.last14)} ч`;
 
         row.append(input, del);
@@ -1090,6 +1110,11 @@
       const ordersActiveChip = document.getElementById("ordersActiveChip");
       const ordersTabActive = document.getElementById("ordersTabActive");
       const ordersTabDone = document.getElementById("ordersTabDone");
+      const ordersSpotlight = document.getElementById("ordersSpotlight");
+      const ordersStatActive = document.getElementById("ordersStatActive");
+      const ordersStatUrgent = document.getElementById("ordersStatUrgent");
+      const ordersStatOverdue = document.getElementById("ordersStatOverdue");
+      const ordersStatDone = document.getElementById("ordersStatDone");
 
       const dlgOrder = document.getElementById("dlgOrder");
       const orderTitle = document.getElementById("orderTitle");
@@ -1114,7 +1139,7 @@
         completedPlural: de("&#1042;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1085;&#1099;&#1093;"),
         noOrders: de("&#1055;&#1086;&#1082;&#1072; &#1085;&#1077;&#1090; &#1079;&#1072;&#1082;&#1072;&#1079;&#1086;&#1074;. &#1053;&#1072;&#1078;&#1084;&#1080;"),
         noCompleted: de("&#1055;&#1086;&#1082;&#1072; &#1085;&#1077;&#1090; &#1074;&#1099;&#1087;&#1086;&#1083;&#1085;&#1077;&#1085;&#1085;&#1099;&#1093; &#1079;&#1072;&#1082;&#1072;&#1079;&#1086;&#1074;."),
-        addOrder: de("+ &#1047;&#1072;&#1082;&#1072;&#1079;"),
+        addOrder: de("+ &#1053;&#1086;&#1074;&#1099;&#1081; &#1079;&#1072;&#1082;&#1072;&#1079;"),
         untitled: de("&#1041;&#1077;&#1079; &#1085;&#1072;&#1079;&#1074;&#1072;&#1085;&#1080;&#1103;"),
         customer: de("&#1047;&#1072;&#1082;&#1072;&#1079;&#1095;&#1080;&#1082;"),
         price: de("&#1057;&#1090;&#1086;&#1080;&#1084;&#1086;&#1089;&#1090;&#1100;"),
@@ -1352,6 +1377,27 @@
         const nowMs = Date.now();
         const active = state.orders.filter(o => !o.completedAtISO);
         const done = state.orders.filter(o => !!o.completedAtISO);
+        const overdueCount = active.filter(o => getRisk(o.deadlineISO, o.completedAtISO, nowMs) === "overdue").length;
+        const urgentCount = active.filter(o => {
+          const risk = getRisk(o.deadlineISO, o.completedAtISO, nowMs);
+          return risk === "warn" || risk === "danger";
+        }).length;
+        const nextDeadline = active
+          .slice()
+          .sort((a,b) => new Date(a.deadlineISO).getTime() - new Date(b.deadlineISO).getTime())[0] || null;
+
+        ordersStatActive.textContent = String(active.length);
+        ordersStatUrgent.textContent = String(urgentCount);
+        ordersStatOverdue.textContent = String(overdueCount);
+        ordersStatDone.textContent = String(done.length);
+
+        if(nextDeadline){
+          ordersSpotlight.textContent = `Ближайший дедлайн: ${nextDeadline.title || T.untitled} · ${fmtDateTime(nextDeadline.deadlineISO)}`;
+        } else if(done.length){
+          ordersSpotlight.textContent = `Активных дедлайнов нет. Выполненных заказов: ${done.length}.`;
+        } else {
+          ordersSpotlight.textContent = "Таймер идет по реальному времени и не зависит от открытой вкладки.";
+        }
 
         ordersTabActive.classList.toggle("active", ordersMode === "active");
         ordersTabDone.classList.toggle("active", ordersMode === "done");
