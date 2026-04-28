@@ -1241,6 +1241,7 @@
       let ordersMode = "active";
       let editingGoalId = null;
       let progressGoalId = null;
+      let goalsDayStamp = todayISO();
       const uiState = { expanded: new Set(), showSubtaskForm: new Set(), subtaskDrafts: new Map() };
 
       function de(entity){
@@ -2153,17 +2154,20 @@
         if(currentView === "orders"){
           if(ae && ae.closest && (ae.closest(".subtask-form") || ae.closest("#dlgOrder"))) return;
           renderOrders();
-          return;
-        }
-
-        if(currentView === "goals"){
-          if(ae && ae.closest && (ae.closest("#dlgGoal") || ae.closest("#dlgGoalProgress"))) return;
-          renderGoals();
         }
       }, 1000);
 
+      setInterval(function(){
+        const nextStamp = todayISO();
+        if(nextStamp === goalsDayStamp) return;
+        goalsDayStamp = nextStamp;
+        ensureGoalsState();
+        if(currentView === "goals") renderGoals();
+      }, 60000);
+
       document.addEventListener("visibilitychange", function(){
         if(document.hidden) return;
+        goalsDayStamp = todayISO();
         renderOrders();
         renderGoals();
       });
