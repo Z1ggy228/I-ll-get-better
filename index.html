@@ -13,6 +13,7 @@
     <div class="tabs">
       <button type="button" class="tabbtn active" id="tabTracker">Трекер</button>
       <button type="button" class="tabbtn" id="tabOrders">Заказы</button>
+      <button type="button" class="tabbtn" id="tabGoals">Цели</button>
     </div>
 
     <section class="view active" id="viewTracker">
@@ -172,6 +173,49 @@
         <div class="orders-list" id="ordersList"></div>
       </div>
     </section>
+
+    <section class="view" id="viewGoals">
+      <div class="card goals-wrap">
+        <div class="goals-head">
+          <div>
+            <span class="eyebrow">Цели</span>
+            <h2 class="goals-title">Денежные цели и накопления</h2>
+            <div class="goals-spotlight" id="goalsSpotlight">Добавь первую денежную цель и отслеживай прогресс до дедлайна.</div>
+          </div>
+          <button type="button" class="primary" id="btnAddGoal">+ Новая цель</button>
+        </div>
+
+        <div class="goals-summary">
+          <div class="stat-card accent">
+            <span class="stat-label">Активные</span>
+            <strong class="stat-value" id="goalsStatActive">0</strong>
+            <span class="stat-meta">Текущие накопления</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Завершены</span>
+            <strong class="stat-value" id="goalsStatCompleted">0</strong>
+            <span class="stat-meta">Достигнутые цели</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Просрочены</span>
+            <strong class="stat-value" id="goalsStatExpired">0</strong>
+            <span class="stat-meta">Нуждаются в пересмотре</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Средний прогресс</span>
+            <strong class="stat-value" id="goalsStatAverage">0%</strong>
+            <span class="stat-meta" id="goalsStatAverageMeta">0 денежных целей</span>
+          </div>
+        </div>
+
+        <div class="goals-meta">
+          <div class="chip" id="goalsTotalChip">Всего целей: 0</div>
+          <div class="chip" id="goalsDeadlineChip">Ближайший дедлайн: —</div>
+        </div>
+
+        <div class="goals-list" id="goalsList"></div>
+      </div>
+    </section>
   </div>
 
   <!-- ADD HOURS -->
@@ -321,6 +365,71 @@
       <div class="modal-foot">
         <button type="button" id="orderCancel">Отмена</button>
         <button class="primary" type="submit">Добавить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- GOALS -->
+  <dialog id="dlgGoal">
+    <div class="modal-head">
+      <h3 id="goalDialogTitle">Новая денежная цель</h3>
+      <button type="button" class="iconbtn" id="goalClose" aria-label="close">✕</button>
+    </div>
+
+    <form id="formGoal">
+      <div class="modal-body">
+        <label>Название цели</label>
+        <input type="text" id="goalTitle" placeholder="Пхукет / Отдать долг / Наушники" required />
+
+        <div class="two">
+          <div>
+            <label>Целевая сумма</label>
+            <input type="number" id="goalTarget" min="0.01" step="0.01" placeholder="5000" required />
+          </div>
+          <div>
+            <label>Текущая сумма</label>
+            <input type="number" id="goalCurrent" min="0" step="0.01" placeholder="1200" required />
+          </div>
+        </div>
+
+        <div class="two">
+          <div>
+            <label>Валюта</label>
+            <select id="goalCurrency" required>
+              <option value="₽">₽</option>
+              <option value="$">$</option>
+              <option value="€">€</option>
+              <option value="฿">฿</option>
+            </select>
+          </div>
+          <div>
+            <label>Дедлайн</label>
+            <input type="date" id="goalDeadline" required />
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="goalCancel">Отмена</button>
+        <button class="primary" type="submit">Сохранить цель</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlgGoalProgress">
+    <div class="modal-head">
+      <h3 id="goalProgressDialogTitle">Обновить сумму</h3>
+      <button type="button" class="iconbtn" id="goalProgressClose" aria-label="close">✕</button>
+    </div>
+
+    <form id="formGoalProgress">
+      <div class="modal-body">
+        <div class="goal-form-note" id="goalProgressTitle">Новая текущая сумма</div>
+        <label>Текущая сумма</label>
+        <input type="number" id="goalProgressValue" min="0" step="0.01" placeholder="1500" required />
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="goalProgressCancel">Отмена</button>
+        <button class="primary" type="submit">Обновить</button>
       </div>
     </form>
   </dialog>
@@ -490,7 +599,9 @@
         avatarDataUrl: ""
       },
       categories: [],
-      entries: []
+      entries: [],
+      orders: [],
+      goals: []
     };
 
     function load(){
@@ -1080,8 +1191,10 @@
     (function(){
       const tabTracker = document.getElementById("tabTracker");
       const tabOrders = document.getElementById("tabOrders");
+      const tabGoals = document.getElementById("tabGoals");
       const viewTracker = document.getElementById("viewTracker");
       const viewOrders = document.getElementById("viewOrders");
+      const viewGoals = document.getElementById("viewGoals");
 
       const ordersList = document.getElementById("ordersList");
       const ordersActiveChip = document.getElementById("ordersActiveChip");
@@ -1101,8 +1214,33 @@
       const orderPrice = document.getElementById("orderPrice");
       const orderNote = document.getElementById("orderNote");
 
+      const goalsList = document.getElementById("goalsList");
+      const goalsSpotlight = document.getElementById("goalsSpotlight");
+      const goalsStatActive = document.getElementById("goalsStatActive");
+      const goalsStatCompleted = document.getElementById("goalsStatCompleted");
+      const goalsStatExpired = document.getElementById("goalsStatExpired");
+      const goalsStatAverage = document.getElementById("goalsStatAverage");
+      const goalsStatAverageMeta = document.getElementById("goalsStatAverageMeta");
+      const goalsTotalChip = document.getElementById("goalsTotalChip");
+      const goalsDeadlineChip = document.getElementById("goalsDeadlineChip");
+
+      const dlgGoal = document.getElementById("dlgGoal");
+      const goalDialogTitle = document.getElementById("goalDialogTitle");
+      const goalTitle = document.getElementById("goalTitle");
+      const goalTarget = document.getElementById("goalTarget");
+      const goalCurrent = document.getElementById("goalCurrent");
+      const goalCurrency = document.getElementById("goalCurrency");
+      const goalDeadline = document.getElementById("goalDeadline");
+
+      const dlgGoalProgress = document.getElementById("dlgGoalProgress");
+      const goalProgressDialogTitle = document.getElementById("goalProgressDialogTitle");
+      const goalProgressTitle = document.getElementById("goalProgressTitle");
+      const goalProgressValue = document.getElementById("goalProgressValue");
+
       let currentView = "tracker";
       let ordersMode = "active";
+      let editingGoalId = null;
+      let progressGoalId = null;
       const uiState = { expanded: new Set(), showSubtaskForm: new Set(), subtaskDrafts: new Map() };
 
       function de(entity){
@@ -1197,6 +1335,146 @@
             if(st.completedAtISO === undefined) st.completedAtISO = null;
           }
         }
+      }
+
+      function toDateISO(value){
+        if(!value) return "";
+        if(typeof value === "string"){
+          if(value.includes("T")) return value.slice(0, 10);
+          if(value.length >= 10) return value.slice(0, 10);
+          return value;
+        }
+        const d = new Date(value);
+        if(Number.isNaN(d.getTime())) return "";
+        return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+      }
+
+      function toGoalNumber(value, fallback){
+        const num = Number(value);
+        return Number.isFinite(num) ? num : fallback;
+      }
+
+      function goalStatus(goal, nowMs){
+        const current = Math.max(0, toGoalNumber(goal.currentAmount, 0));
+        const target = Math.max(0.01, toGoalNumber(goal.targetAmount, 0.01));
+        if(current >= target) return "completed";
+
+        const deadlineMs = new Date(`${goal.deadlineISO}T23:59:59`).getTime();
+        if(!Number.isNaN(deadlineMs) && deadlineMs < nowMs) return "expired";
+        return "active";
+      }
+
+      function ensureGoalsState(){
+        if(!Array.isArray(state.goals)) state.goals = [];
+        const nowMs = Date.now();
+        for(const goal of state.goals){
+          if(!goal.id) goal.id = uid();
+          goal.title = (goal.title || "").trim();
+          goal.targetAmount = Math.max(0.01, toGoalNumber(goal.targetAmount, 0.01));
+          goal.currentAmount = Math.max(0, toGoalNumber(goal.currentAmount, 0));
+          goal.currency = goal.currency || "₽";
+          goal.deadlineISO = toDateISO(goal.deadlineISO) || todayISO();
+          goal.createdAtISO = goal.createdAtISO || new Date().toISOString();
+          goal.status = goalStatus(goal, nowMs);
+        }
+      }
+
+      function goalProgress(goal){
+        const target = Math.max(0.01, toGoalNumber(goal.targetAmount, 0.01));
+        const current = Math.max(0, toGoalNumber(goal.currentAmount, 0));
+        return Math.max(0, Math.min(100, (current / target) * 100));
+      }
+
+      function goalStatusLabel(status){
+        if(status === "completed") return "completed";
+        if(status === "expired") return "expired";
+        return "active";
+      }
+
+      function goalStatusTitle(status){
+        if(status === "completed") return "Достигнута";
+        if(status === "expired") return "Просрочена";
+        return "Активна";
+      }
+
+      function formatGoalMoney(value, currency){
+        const amount = Math.max(0, toGoalNumber(value, 0));
+        const formatted = new Intl.NumberFormat("ru-RU", {
+          minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+          maximumFractionDigits: 2
+        }).format(amount);
+        return `${formatted} ${currency || "₽"}`;
+      }
+
+      function goalCreatedDate(goal){
+        return formatShortDate(toDateISO(goal.createdAtISO));
+      }
+
+      function goalDaysLeft(goal){
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const deadline = new Date(`${goal.deadlineISO}T00:00:00`);
+        if(Number.isNaN(deadline.getTime())) return null;
+        return Math.round((deadline.getTime() - today.getTime()) / 86400000);
+      }
+
+      function goalDeadlineNote(goal){
+        const days = goalDaysLeft(goal);
+        if(goal.status === "completed") return "Цель достигнута";
+        if(days === null) return "Дедлайн не указан";
+        if(goal.status === "expired"){
+          const overdue = Math.max(1, Math.abs(days));
+          return `Просрочена на ${overdue} ${pluralize(overdue, "день", "дня", "дней")}`;
+        }
+        if(days === 0) return "До дедлайна: сегодня";
+        if(days === 1) return "До дедлайна: 1 день";
+        return `До дедлайна: ${days} ${pluralize(days, "день", "дня", "дней")}`;
+      }
+
+      function goalSortRank(status){
+        if(status === "active") return 0;
+        if(status === "expired") return 1;
+        return 2;
+      }
+
+      function openGoalDialog(goalId){
+        ensureGoalsState();
+        editingGoalId = goalId || null;
+        const goal = goalId ? state.goals.find(item => item.id === goalId) : null;
+
+        goalDialogTitle.textContent = goal ? "Редактировать цель" : "Новая денежная цель";
+        goalTitle.value = goal ? goal.title : "";
+        goalTarget.value = goal ? String(goal.targetAmount) : "";
+        goalCurrent.value = goal ? String(goal.currentAmount) : "0";
+        goalCurrency.value = goal ? (goal.currency || "₽") : "₽";
+
+        const defaultDeadline = new Date();
+        defaultDeadline.setDate(defaultDeadline.getDate() + 30);
+        goalDeadline.value = goal ? goal.deadlineISO : toDateISO(defaultDeadline);
+
+        dlgGoal.showModal();
+      }
+
+      function closeGoalDialog(){
+        editingGoalId = null;
+        dlgGoal.close();
+      }
+
+      function openGoalProgressDialog(goalId){
+        ensureGoalsState();
+        const goal = state.goals.find(item => item.id === goalId);
+        if(!goal) return;
+
+        progressGoalId = goalId;
+        goalProgressDialogTitle.textContent = `Обновить сумму · ${goal.title}`;
+        goalProgressTitle.textContent = `${formatGoalMoney(goal.currentAmount, goal.currency)} из ${formatGoalMoney(goal.targetAmount, goal.currency)}`;
+        goalProgressValue.value = String(goal.currentAmount);
+        dlgGoalProgress.showModal();
+      }
+
+      function closeGoalProgressDialog(){
+        progressGoalId = null;
+        dlgGoalProgress.close();
       }
 
       function getRisk(deadlineISO, completedAtISO, nowMs){
@@ -1574,14 +1852,175 @@
         });
       }
 
+      function renderGoals(){
+        ensureGoalsState();
+
+        const total = state.goals.length;
+        const active = state.goals.filter(goal => goal.status === "active");
+        const completed = state.goals.filter(goal => goal.status === "completed");
+        const expired = state.goals.filter(goal => goal.status === "expired");
+        const averageProgress = total
+          ? Math.round(state.goals.reduce((sum, goal) => sum + goalProgress(goal), 0) / total)
+          : 0;
+
+        const nextActiveGoal = active
+          .slice()
+          .sort((a, b) => new Date(`${a.deadlineISO}T23:59:59`).getTime() - new Date(`${b.deadlineISO}T23:59:59`).getTime())[0] || null;
+
+        goalsStatActive.textContent = String(active.length);
+        goalsStatCompleted.textContent = String(completed.length);
+        goalsStatExpired.textContent = String(expired.length);
+        goalsStatAverage.textContent = `${averageProgress}%`;
+        goalsStatAverageMeta.textContent = `${total} ${pluralize(total, "денежная цель", "денежные цели", "денежных целей")}`;
+        goalsTotalChip.textContent = `Всего целей: ${total}`;
+
+        if(nextActiveGoal){
+          goalsDeadlineChip.textContent = `Ближайший дедлайн: ${formatShortDate(nextActiveGoal.deadlineISO)}`;
+          goalsSpotlight.textContent = `${nextActiveGoal.title} · ${goalDeadlineNote(nextActiveGoal)} · ${formatGoalMoney(nextActiveGoal.currentAmount, nextActiveGoal.currency)} / ${formatGoalMoney(nextActiveGoal.targetAmount, nextActiveGoal.currency)}`;
+        } else if(expired.length){
+          goalsDeadlineChip.textContent = `Просроченные: ${expired.length}`;
+          goalsSpotlight.textContent = `Есть ${expired.length} ${pluralize(expired.length, "просроченная цель", "просроченные цели", "просроченных целей")} — их стоит пересмотреть или продлить.`;
+        } else if(completed.length){
+          goalsDeadlineChip.textContent = "Ближайший дедлайн: —";
+          goalsSpotlight.textContent = `Активных целей нет. Завершено: ${completed.length}. Можно поставить следующую финансовую цель.`;
+        } else {
+          goalsDeadlineChip.textContent = "Ближайший дедлайн: —";
+          goalsSpotlight.textContent = "Добавь первую денежную цель и отслеживай прогресс до дедлайна.";
+        }
+
+        if(!total){
+          goalsList.innerHTML = '<div class="empty">Пока нет денежных целей. Нажми <b>"+ Новая цель"</b>, чтобы добавить первую.</div>';
+          return;
+        }
+
+        const sorted = state.goals
+          .slice()
+          .sort((a, b) => {
+            const aRank = goalSortRank(a.status);
+            const bRank = goalSortRank(b.status);
+            if(aRank !== bRank) return aRank - bRank;
+
+            if(a.status === "active"){
+              return new Date(`${a.deadlineISO}T23:59:59`).getTime() - new Date(`${b.deadlineISO}T23:59:59`).getTime();
+            }
+            if(a.status === "expired"){
+              return new Date(`${b.deadlineISO}T23:59:59`).getTime() - new Date(`${a.deadlineISO}T23:59:59`).getTime();
+            }
+            return new Date(b.createdAtISO).getTime() - new Date(a.createdAtISO).getTime();
+          });
+
+        goalsList.innerHTML = "";
+
+        sorted.forEach(goal => {
+          const progress = goalProgress(goal);
+          const box = document.createElement("div");
+          box.className = `goal-item is-${goal.status}`;
+
+          const top = document.createElement("div");
+          top.className = "goal-top";
+
+          const topLeft = document.createElement("div");
+          const title = document.createElement("h3");
+          title.className = "goal-title";
+          title.textContent = goal.title || "Без названия";
+
+          const submeta = document.createElement("div");
+          submeta.className = "goal-submeta";
+          submeta.textContent = `Создана ${goalCreatedDate(goal)}`;
+          topLeft.append(title, submeta);
+
+          const status = document.createElement("span");
+          status.className = `goal-status ${goalStatusLabel(goal.status)}`;
+          status.textContent = goalStatusTitle(goal.status);
+
+          top.append(topLeft, status);
+
+          const progressHead = document.createElement("div");
+          progressHead.className = "goal-progress-head";
+
+          const amount = document.createElement("strong");
+          amount.className = "goal-amount";
+          amount.textContent = `${formatGoalMoney(goal.currentAmount, goal.currency)} / ${formatGoalMoney(goal.targetAmount, goal.currency)}`;
+
+          const percent = document.createElement("span");
+          percent.className = "goal-percent";
+          percent.textContent = `${Math.round(progress)}%`;
+
+          progressHead.append(amount, percent);
+
+          const bar = document.createElement("div");
+          bar.className = "goal-progress-bar";
+          const fill = document.createElement("i");
+          fill.style.width = `${progress.toFixed(4)}%`;
+          bar.appendChild(fill);
+
+          const meta = document.createElement("div");
+          meta.className = "goal-meta-grid";
+
+          [
+            { label: "Дедлайн", value: formatShortDate(goal.deadlineISO) },
+            { label: "Статус", value: goalDeadlineNote(goal) },
+            { label: "Прогресс", value: `${formatGoalMoney(goal.currentAmount, goal.currency)} из ${formatGoalMoney(goal.targetAmount, goal.currency)}` }
+          ].forEach(item => {
+            const metric = document.createElement("div");
+            metric.className = "goal-metric";
+
+            const metricLabel = document.createElement("span");
+            metricLabel.className = "metric-label";
+            metricLabel.textContent = item.label;
+
+            const metricValue = document.createElement("span");
+            metricValue.className = "metric-value";
+            metricValue.textContent = item.value;
+
+            metric.append(metricLabel, metricValue);
+            meta.appendChild(metric);
+          });
+
+          const actions = document.createElement("div");
+          actions.className = "goal-actions";
+
+          const progressBtn = document.createElement("button");
+          progressBtn.type = "button";
+          progressBtn.className = "primary";
+          progressBtn.textContent = "Обновить сумму";
+          progressBtn.onclick = function(){ openGoalProgressDialog(goal.id); };
+
+          const editBtn = document.createElement("button");
+          editBtn.type = "button";
+          editBtn.textContent = "Редактировать";
+          editBtn.onclick = function(){ openGoalDialog(goal.id); };
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "danger";
+          delBtn.textContent = "Удалить";
+          delBtn.onclick = function(){
+            if(!confirm(`Удалить цель "${goal.title || "Без названия"}"?`)) return;
+            state.goals = state.goals.filter(item => item.id !== goal.id);
+            save();
+            renderGoals();
+          };
+
+          actions.append(progressBtn, editBtn, delBtn);
+          box.append(top, progressHead, bar, meta, actions);
+          goalsList.appendChild(box);
+        });
+      }
+
       function setView(view){
         currentView = view;
         const isTracker = view === "tracker";
+        const isOrders = view === "orders";
+        const isGoals = view === "goals";
         tabTracker.classList.toggle("active", isTracker);
-        tabOrders.classList.toggle("active", !isTracker);
+        tabOrders.classList.toggle("active", isOrders);
+        tabGoals.classList.toggle("active", isGoals);
         viewTracker.classList.toggle("active", isTracker);
-        viewOrders.classList.toggle("active", !isTracker);
-        if(!isTracker) renderOrders();
+        viewOrders.classList.toggle("active", isOrders);
+        viewGoals.classList.toggle("active", isGoals);
+        if(isOrders) renderOrders();
+        if(isGoals) renderGoals();
       }
 
       function openAddOrder(){
@@ -1597,13 +2036,20 @@
       const prevRenderAll = renderAll;
       renderAll = function(){
         ensureOrdersState();
+        ensureGoalsState();
         prevRenderAll();
         renderOrders();
+        renderGoals();
       };
 
       document.getElementById("orderClose").onclick = function(){ dlgOrder.close(); };
       document.getElementById("orderCancel").onclick = function(){ dlgOrder.close(); };
       document.getElementById("btnAddOrder").onclick = openAddOrder;
+      document.getElementById("goalClose").onclick = closeGoalDialog;
+      document.getElementById("goalCancel").onclick = closeGoalDialog;
+      document.getElementById("goalProgressClose").onclick = closeGoalProgressDialog;
+      document.getElementById("goalProgressCancel").onclick = closeGoalProgressDialog;
+      document.getElementById("btnAddGoal").onclick = function(){ openGoalDialog(); };
 
       document.getElementById("formOrder").addEventListener("submit", function(e){
         e.preventDefault();
@@ -1642,24 +2088,90 @@
         renderOrders();
       });
 
+      document.getElementById("formGoal").addEventListener("submit", function(e){
+        e.preventDefault();
+
+        const title = (goalTitle.value || "").trim();
+        const targetAmount = Number(goalTarget.value);
+        const currentAmount = Number(goalCurrent.value);
+        const currency = goalCurrency.value || "₽";
+        const deadlineISO = goalDeadline.value;
+
+        if(!title || !Number.isFinite(targetAmount) || targetAmount <= 0 || !Number.isFinite(currentAmount) || currentAmount < 0 || !deadlineISO){
+          return;
+        }
+
+        ensureGoalsState();
+        const nowISO = new Date().toISOString();
+        const goal = editingGoalId
+          ? state.goals.find(item => item.id === editingGoalId)
+          : { id: uid(), createdAtISO: nowISO };
+
+        if(!goal) return;
+
+        goal.title = title;
+        goal.targetAmount = targetAmount;
+        goal.currentAmount = currentAmount;
+        goal.currency = currency;
+        goal.deadlineISO = deadlineISO;
+        goal.status = goalStatus(goal, Date.now());
+
+        if(!editingGoalId){
+          state.goals.push(goal);
+        }
+
+        save();
+        closeGoalDialog();
+        setView("goals");
+        renderGoals();
+      });
+
+      document.getElementById("formGoalProgress").addEventListener("submit", function(e){
+        e.preventDefault();
+        ensureGoalsState();
+
+        const goal = state.goals.find(item => item.id === progressGoalId);
+        const currentAmount = Number(goalProgressValue.value);
+        if(!goal || !Number.isFinite(currentAmount) || currentAmount < 0) return;
+
+        goal.currentAmount = currentAmount;
+        goal.status = goalStatus(goal, Date.now());
+
+        save();
+        closeGoalProgressDialog();
+        renderGoals();
+      });
+
       tabTracker.onclick = function(){ setView("tracker"); };
       tabOrders.onclick = function(){ setView("orders"); };
+      tabGoals.onclick = function(){ setView("goals"); };
       ordersTabActive.onclick = function(){ ordersMode = "active"; renderOrders(); };
       ordersTabDone.onclick = function(){ ordersMode = "done"; renderOrders(); };
 
       setInterval(function(){
-        if(currentView !== "orders") return;
         const ae = document.activeElement;
-        if(ae && ae.closest && (ae.closest(".subtask-form") || ae.closest("#dlgOrder"))) return;
-        renderOrders();
+        if(currentView === "orders"){
+          if(ae && ae.closest && (ae.closest(".subtask-form") || ae.closest("#dlgOrder"))) return;
+          renderOrders();
+          return;
+        }
+
+        if(currentView === "goals"){
+          if(ae && ae.closest && (ae.closest("#dlgGoal") || ae.closest("#dlgGoalProgress"))) return;
+          renderGoals();
+        }
       }, 1000);
 
       document.addEventListener("visibilitychange", function(){
-        if(!document.hidden) renderOrders();
+        if(document.hidden) return;
+        renderOrders();
+        renderGoals();
       });
 
       ensureOrdersState();
+      ensureGoalsState();
       renderOrders();
+      renderGoals();
     })();
   </script>
 

@@ -122,7 +122,9 @@ h2,
 h3,
 .p-name,
 .r-title,
-.order-title {
+.order-title,
+.goals-title,
+.goal-title {
   font-family: "Russo One", "Monrope", "Manrope", sans-serif;
   font-weight: 400;
   letter-spacing: 0.01em;
@@ -244,7 +246,8 @@ h3,
 }
 
 .hero-stats,
-.orders-summary {
+.orders-summary,
+.goals-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -332,6 +335,7 @@ h3,
 
 .toolbar .chip,
 .orders-meta .chip,
+.goals-meta .chip,
 .order-pill,
 .inline-chip,
 .lvl-pill {
@@ -347,6 +351,7 @@ h3,
 
 .toolbar .chip,
 .orders-meta .chip,
+.goals-meta .chip,
 .inline-chip {
   color: var(--muted-strong);
   font-size: 12px;
@@ -1180,6 +1185,217 @@ input[type="file"]::file-selector-button {
   display: grid;
 }
 
+.goals-wrap {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-color: rgba(130, 213, 165, 0.16);
+  background: linear-gradient(180deg, rgba(12, 16, 24, 0.97), rgba(8, 10, 16, 0.96));
+  box-shadow: var(--shadow);
+}
+
+.goals-head {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.goals-title {
+  margin: 0 0 8px;
+  font-size: clamp(38px, 5vw, 52px);
+  line-height: 0.92;
+}
+
+.goals-spotlight {
+  color: var(--muted-strong);
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 820px;
+}
+
+.goals-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.goals-summary .stat-card {
+  min-height: 108px;
+}
+
+.goals-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.goal-item {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(18, 22, 33, 0.92), rgba(8, 11, 18, 0.96)),
+    radial-gradient(520px 260px at 100% 0%, rgba(142, 163, 255, 0.08), transparent 60%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 18px 36px rgba(0, 0, 0, 0.24);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.goal-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(142, 163, 255, 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 24px 42px rgba(0, 0, 0, 0.26);
+}
+
+.goal-item.is-completed {
+  border-color: rgba(130, 213, 165, 0.44);
+  box-shadow: 0 0 0 1px rgba(130, 213, 165, 0.14), 0 18px 36px rgba(14, 46, 28, 0.24);
+}
+
+.goal-item.is-expired {
+  border-color: rgba(255, 140, 150, 0.56);
+  box-shadow: 0 0 0 1px rgba(255, 140, 150, 0.14), 0 18px 36px rgba(66, 10, 18, 0.28);
+}
+
+.goal-top,
+.goal-progress-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.goal-title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 0.96;
+}
+
+.goal-submeta {
+  margin-top: 8px;
+  color: var(--muted-strong);
+  font-size: 12px;
+}
+
+.goal-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.goal-status.active {
+  color: var(--text);
+  border-color: rgba(142, 163, 255, 0.3);
+  background: rgba(142, 163, 255, 0.12);
+}
+
+.goal-status.completed {
+  color: #b6f0cb;
+  border-color: rgba(130, 213, 165, 0.34);
+  background: rgba(130, 213, 165, 0.12);
+}
+
+.goal-status.expired {
+  color: #ffc2c9;
+  border-color: rgba(255, 140, 150, 0.36);
+  background: rgba(255, 140, 150, 0.12);
+}
+
+.goal-progress-head {
+  margin-top: 18px;
+  align-items: center;
+}
+
+.goal-amount {
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.goal-percent {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.goal-progress-bar {
+  height: 12px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.goal-progress-bar > i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(142, 163, 255, 0.38), rgba(130, 213, 165, 0.96));
+  box-shadow: 0 0 24px rgba(130, 213, 165, 0.22);
+}
+
+.goal-item.is-expired .goal-progress-bar > i {
+  background: linear-gradient(90deg, rgba(255, 140, 150, 0.44), rgba(255, 140, 150, 0.96));
+  box-shadow: 0 0 24px rgba(255, 140, 150, 0.22);
+}
+
+.goal-item.is-completed .goal-progress-bar > i {
+  background: linear-gradient(90deg, rgba(130, 213, 165, 0.44), rgba(130, 213, 165, 0.98));
+  box-shadow: 0 0 24px rgba(130, 213, 165, 0.24);
+}
+
+.goal-meta-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.goal-metric {
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.goal-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.goal-form-note {
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted-strong);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 @media (max-width: 1180px) {
   .grid {
     grid-template-columns: 1fr;
@@ -1205,6 +1421,10 @@ input[type="file"]::file-selector-button {
   .orders-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .goals-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
@@ -1213,6 +1433,7 @@ input[type="file"]::file-selector-button {
   }
 
   .orders-wrap,
+  .goals-wrap,
   .tracker-side-card {
     padding: 20px;
   }
@@ -1248,7 +1469,9 @@ input[type="file"]::file-selector-button {
 
   .hero-stats,
   .orders-summary,
+  .goals-summary,
   .r-kpis,
+  .goal-meta-grid,
   .two,
   .subtask-form {
     grid-template-columns: 1fr;
@@ -1269,6 +1492,8 @@ input[type="file"]::file-selector-button {
   .r-top,
   .subtask-head,
   .order-top,
+  .goal-top,
+  .goal-progress-head,
   .history-top,
   .manage-row {
     flex-direction: column;
@@ -1281,9 +1506,11 @@ input[type="file"]::file-selector-button {
   }
 
   .orders-head,
+  .goals-head,
   .modal-head,
   .modal-foot,
   .order-actions,
+  .goal-actions,
   .subtask-actions {
     flex-direction: column;
     align-items: stretch;
